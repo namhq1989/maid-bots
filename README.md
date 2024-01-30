@@ -13,6 +13,11 @@
 
 - [ ] Uptime
   - [ ] Domain + SSL // doing
+    - [x] Check
+    - [ ] Watch
+    - [ ] List
+    - [ ] Edit
+    - [ ] Remove
   - [ ] IP:Port
   - [ ] API
   - [ ] Ping

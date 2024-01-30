@@ -77,14 +77,14 @@ func (c DomainCheck) formatDomainCheckResponseHTMLTable(response *modelresponse.
 
 func (c DomainCheck) getStatusEmojiHTML(status bool) string {
 	if status {
-		return "<i>Up</i> ✅"
+		return "<i>Up</i>  ✅"
 	}
 	return "<i>Down</i> ❌"
 }
 
 func (c DomainCheck) getBoolEmojiHTML(value bool) string {
 	if value {
-		return "<i>Yes</i> ✅"
+		return "<i>Yes</i>  ✅"
 	}
 	return "<i>No</i> ❌"
 }
