@@ -1,0 +1,28 @@
+name: lint
+
+on:
+  pull_request:
+
+jobs:
+  golangci-lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.5'
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/golangci-lint
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-golangcilint-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-golangcilint-
+      - name: golangci-lint
+        uses: reviewdog/action-golangci-lint@v2
+        with:
+          reporter: github-pr-check
+          level: warning
+          fail_on_error: true
