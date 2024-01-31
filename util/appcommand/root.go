@@ -3,6 +3,7 @@ package appcommand
 var Root = struct {
 	Help    Command
 	Monitor Command
+	Random  Command
 	Example Command
 }{
 	Help: Command{
@@ -14,6 +15,11 @@ var Root = struct {
 		Base:        "monitor",
 		WithSlash:   "/monitor",
 		Description: "Register and manage monitoring targets, including domain, http, icmp, tcp",
+	},
+	Random: Command{
+		Base:        "random",
+		WithSlash:   "/random",
+		Description: "Random things",
 	},
 	Example: Command{
 		Base:        "example",
