@@ -1,6 +1,6 @@
 *EXAMPLE:*
 
-`/example $target`
+`/example $action`
 
-*Targets:*
+*Actions:*
 `monitor` \- monitor

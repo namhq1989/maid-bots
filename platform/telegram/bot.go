@@ -3,20 +3,13 @@ package telegram
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"time"
 
-	"github.com/namhq1989/maid-bots/platform/telegram/command/example"
-
-	"github.com/namhq1989/maid-bots/platform/telegram/command"
-
-	"github.com/namhq1989/maid-bots/config"
-
-	"github.com/namhq1989/maid-bots/platform/telegram/command/help"
-	"github.com/namhq1989/maid-bots/platform/telegram/command/monitor"
-
-	"github.com/go-telegram/bot/models"
+	"github.com/namhq1989/maid-bots/util/appcommand"
 
 	"github.com/go-telegram/bot"
+	"github.com/go-telegram/bot/models"
 )
 
 func Init(enabled bool, token string) {
@@ -36,24 +29,43 @@ func Init(enabled bool, token string) {
 
 	// set commands
 	_, _ = b.SetMyCommands(context.Background(), &bot.SetMyCommandsParams{
-		Commands:     command.Commands,
+		Commands:     commands,
 		Scope:        models.BotCommandScope(&models.BotCommandScopeDefault{}),
 		LanguageCode: "en",
 	})
 
 	// help
-	b.RegisterHandler(bot.HandlerTypeMessageText, config.Commands.Help.WithSlash, bot.MatchTypePrefix, help.Handler)
+	b.RegisterHandlerRegexp(bot.HandlerTypeMessageText, generateRegexp(appcommand.Root.Help.WithSlash), helpHandler)
 
 	// example
-	b.RegisterHandler(bot.HandlerTypeMessageText, config.Commands.Example.WithSlash, bot.MatchTypePrefix, example.Handler)
+	b.RegisterHandlerRegexp(bot.HandlerTypeMessageText, generateRegexp(appcommand.Root.Example.WithSlash), exampleHandler)
 
 	// monitor
-	b.RegisterHandler(bot.HandlerTypeMessageText, config.Commands.Monitor.WithSlash, bot.MatchTypePrefix, monitor.Handler)
+	b.RegisterHandlerRegexp(bot.HandlerTypeMessageText, generateRegexp(appcommand.Root.Monitor.WithSlash), monitorHandler)
 
-	// text
-	b.RegisterHandler(bot.HandlerTypeMessageText, "", bot.MatchTypePrefix, defaultHandler)
+	// unrecognized
+	b.RegisterHandler(bot.HandlerTypeMessageText, "", bot.MatchTypePrefix, unrecognizedHandler)
 
 	go b.Start(context.Background())
 
 	fmt.Printf("⚡️ [telegram]: initialized \n")
+}
+
+func generateRegexp(cmd string) *regexp.Regexp {
+	return regexp.MustCompile(fmt.Sprintf(`^%s`, cmd))
+}
+
+var commands = []models.BotCommand{
+	{
+		Command:     appcommand.Root.Help.Base,
+		Description: appcommand.Root.Help.Description,
+	},
+	{
+		Command:     appcommand.Root.Monitor.Base,
+		Description: appcommand.Root.Monitor.Description,
+	},
+	{
+		Command:     appcommand.Root.Example.Base,
+		Description: appcommand.Root.Example.Description,
+	},
 }

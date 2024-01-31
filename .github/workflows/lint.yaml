@@ -5,6 +5,10 @@ on:
 
 jobs:
   golangci-lint:
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -26,4 +30,4 @@ jobs:
           reporter: github-pr-review
           level: warning
           fail_on_error: true
-          golangci_lint_flags: --timeout=10m
+          golangci_lint_flags: --timeout 2m

@@ -1,12 +1,6 @@
-package config
+package appcommand
 
-type Command struct {
-	Base        string
-	WithSlash   string
-	Description string
-}
-
-var Commands = struct {
+var Root = struct {
 	Help    Command
 	Monitor Command
 	Example Command
@@ -14,7 +8,7 @@ var Commands = struct {
 	Help: Command{
 		Base:        "help",
 		WithSlash:   "/help",
-		Description: "Get assistance and information about any command",
+		Description: "Get assistance and information about any handler",
 	},
 	Monitor: Command{
 		Base:        "monitor",

@@ -31,12 +31,12 @@ func Init(redisURL string, concurrency int) {
 }
 
 func initServer(redisConn asynq.RedisClientOpt, concurrency int) *asynq.ServeMux {
-	// set default for concurrency
+	// set unrecognized for concurrency
 	if concurrency == 0 {
 		concurrency = 100
 	}
 
-	// default retry delay in 10s
+	// unrecognized retry delay in 10s
 	retryDelayFunc := func(n int, e error, t *asynq.Task) time.Duration {
 		return 10 * time.Second
 	}

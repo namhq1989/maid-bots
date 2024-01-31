@@ -1,15 +1,15 @@
 *MONITOR:*
 
-The /monitor command allows you to manage and monitor various targets with different commands
+The `/monitor` command allows you to manage and monitor various targets with different commands
 
-`/monitor $command $target $value` 
+`/monitor $action $target $value` 
 
-*Commands:*
+*Actions:*
   `check` \- perform a one\-time check on the target
   `register` \- register a new target for continuous monitoring according to a predefined schedule
   `list` \- display a list of all registered monitoring targets
-  `remove` \- remove a specific target by its ID
-  `example` \- list of examples
+  `remove` \- remove a specific target by its id
+  `stats` \- get statistic of a specific target by its id
 
 *Targets:*
   `domain` \- domain name
