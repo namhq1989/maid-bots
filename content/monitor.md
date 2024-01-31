@@ -1,6 +1,6 @@
 *MONITOR:*
 
-The /monitor command allows you to manage and monitor various targets with different commands
+The `/monitor` command allows you to manage and monitor various targets with different commands
 
 `/monitor $action $target $value` 
 

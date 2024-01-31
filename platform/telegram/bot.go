@@ -3,8 +3,10 @@ package telegram
 import (
 	"context"
 	"fmt"
-	"github.com/namhq1989/maid-bots/util/appcommand"
+	"regexp"
 	"time"
+
+	"github.com/namhq1989/maid-bots/util/appcommand"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -33,20 +35,24 @@ func Init(enabled bool, token string) {
 	})
 
 	// help
-	b.RegisterHandler(bot.HandlerTypeMessageText, appcommand.Root.Help.WithSlash, bot.MatchTypePrefix, helpHandler)
+	b.RegisterHandlerRegexp(bot.HandlerTypeMessageText, generateRegexp(appcommand.Root.Help.WithSlash), helpHandler)
 
 	// example
-	b.RegisterHandler(bot.HandlerTypeMessageText, appcommand.Root.Example.WithSlash, bot.MatchTypePrefix, exampleHandler)
+	b.RegisterHandlerRegexp(bot.HandlerTypeMessageText, generateRegexp(appcommand.Root.Example.WithSlash), exampleHandler)
 
 	// monitor
-	b.RegisterHandler(bot.HandlerTypeMessageText, appcommand.Root.Monitor.WithSlash, bot.MatchTypePrefix, monitorHandler)
+	b.RegisterHandlerRegexp(bot.HandlerTypeMessageText, generateRegexp(appcommand.Root.Monitor.WithSlash), monitorHandler)
 
-	// text
-	b.RegisterHandler(bot.HandlerTypeMessageText, "", bot.MatchTypePrefix, defaultHandler)
+	// unrecognized
+	b.RegisterHandler(bot.HandlerTypeMessageText, "", bot.MatchTypePrefix, unrecognizedHandler)
 
 	go b.Start(context.Background())
 
 	fmt.Printf("⚡️ [telegram]: initialized \n")
+}
+
+func generateRegexp(cmd string) *regexp.Regexp {
+	return regexp.MustCompile(fmt.Sprintf(`^%s`, cmd))
 }
 
 var commands = []models.BotCommand{

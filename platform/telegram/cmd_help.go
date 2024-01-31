@@ -23,6 +23,6 @@ func helpHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 		ParseMode: models.ParseModeMarkdown,
 		Text:      result,
 	}); err != nil {
-		ctx.Logger.Error("send /help message", err, appcontext.Fields{})
+		ctx.Logger.Error("send /help response", err, appcontext.Fields{})
 	}
 }

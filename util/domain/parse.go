@@ -27,7 +27,7 @@ func Parse(input string) (*Information, error) {
 		return nil, errors.New("invalid domain name")
 	}
 
-	// add a default scheme if none is present to help with parsing
+	// add a unrecognized scheme if none is present to help with parsing
 	if !strings.Contains(input, "://") {
 		input = "https://" + input
 	}

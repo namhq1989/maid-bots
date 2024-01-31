@@ -22,6 +22,6 @@ func exampleHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 		ParseMode: models.ParseModeMarkdown,
 		Text:      result,
 	}); err != nil {
-		ctx.Logger.Error("send /example message", err, appcontext.Fields{})
+		ctx.Logger.Error("send /example response", err, appcontext.Fields{})
 	}
 }

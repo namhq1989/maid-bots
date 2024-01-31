@@ -5,15 +5,15 @@ import (
 	"strings"
 )
 
-func ExtractCommand(input string) (string, bool) {
+func ExtractCommand(input string) string {
 	re := regexp.MustCompile(`^/(\w+)`)
 	matches := re.FindStringSubmatch(input)
 	if len(matches) > 1 {
-		return "/" + matches[1], true
+		return "/" + matches[1]
 	}
 
 	// No match found
-	return "", false
+	return ""
 }
 
 func ExtractParameters(input string) []string {
