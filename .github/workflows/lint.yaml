@@ -23,6 +23,6 @@ jobs:
       - name: golangci-lint
         uses: reviewdog/action-golangci-lint@v2
         with:
-          reporter: github-pr-check
+          reporter: github-pr-review
           level: warning
           fail_on_error: true

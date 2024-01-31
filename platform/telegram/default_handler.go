@@ -43,6 +43,8 @@ func defaultHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 		value := redis.GetValueByKey(fmt.Sprintf("%d", update.Message.Chat.ID))
 		// trim value since it has `"` in value
 		value = strings.Trim(value, `"`)
+
+		fmt.Println("value: ", value)
 	}
 
 	// switch value {
