@@ -4,7 +4,11 @@ on:
   pull_request:
 
 jobs:
-  golangci-lint:
+  reviewdog:
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -20,10 +24,11 @@ jobs:
           key: ${{ runner.os }}-golangcilint-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-golangcilint-
-      - name: golangci-lint
-        uses: reviewdog/action-golangci-lint@v2
+      - uses: reviewdog/action-setup@v1
         with:
-          reporter: github-pr-review
-          level: warning
-          fail_on_error: true
-          golangci_lint_flags: --timeout=10m
+          reviewdog_version: latest # Optional. [latest,nightly,v.X.Y.Z]
+      - name: Run reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          reviewdog -reporter=github-pr-review -runners=golint,govet -level=warning -fail-on-error --timeout=10m
