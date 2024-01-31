@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  reviewdog:
+  golangci-lint:
     permissions:
       checks: write
       contents: read
@@ -24,11 +24,10 @@ jobs:
           key: ${{ runner.os }}-golangcilint-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-golangcilint-
-      - uses: reviewdog/action-setup@v1
+      - name: golangci-lint
+        uses: reviewdog/action-golangci-lint@v2
         with:
-          reviewdog_version: latest # Optional. [latest,nightly,v.X.Y.Z]
-      - name: Run reviewdog
-        env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          reviewdog -reporter=github-pr-review -runners=golint,govet -level=warning -fail-on-error
+          reporter: github-pr-review
+          level: warning
+          fail_on_error: true
+          golangci_lint_flags: --enable-all --timeout 2m
