@@ -31,4 +31,4 @@ jobs:
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          reviewdog -reporter=github-pr-review -runners=golint,govet -level=warning -fail-on-error --timeout=10m
+          reviewdog -reporter=github-pr-review -runners=golint,govet -level=warning -fail-on-error
