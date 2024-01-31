@@ -80,7 +80,7 @@ func exchangeToken(ctx *appcontext.AppContext, code string) (*ExchangeTokenRespo
 
 func fetchGitHubUser(ctx *appcontext.AppContext, accessToken string) (*GitHubUserData, error) {
 	// prepare request
-	req, _ := http.NewRequest("GET", githubFetchUserURL, nil)
+	req, _ := http.NewRequest("GET", githubFetchUserURL, http.NoBody)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 
 	// call api

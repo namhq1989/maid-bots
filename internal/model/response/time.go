@@ -15,7 +15,7 @@ type TimeResponse struct {
 }
 
 func (t *TimeResponse) UnmarshalJSON(b []byte) error {
-	if string(b) == "" || string(b) == "\"\"" {
+	if len(b) == 0 {
 		return nil
 	}
 	return json.Unmarshal(b, &t.Time)

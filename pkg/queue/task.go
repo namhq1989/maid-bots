@@ -20,10 +20,12 @@ func (i Instance) RunTask(queue string, payload []byte, retryTimes int) (*asynq.
 	if retryTimes < 0 {
 		retryTimes = 0
 	}
-	options = append(options, asynq.MaxRetry(retryTimes))
 
-	// task timeout
-	options = append(options, asynq.Timeout(taskTimeout))
+	// append options
+	options = append(options,
+		asynq.MaxRetry(retryTimes),
+		asynq.Timeout(taskTimeout),
+	)
 
 	// Enqueue task
 	return i.Client.Enqueue(task, options...)
@@ -41,10 +43,12 @@ func (i Instance) ScheduledTask(typename string, payload []byte, cronSpec string
 	if retryTimes < 0 {
 		retryTimes = 0
 	}
-	options = append(options, asynq.MaxRetry(retryTimes))
 
-	// task timeout
-	options = append(options, asynq.Timeout(taskTimeout))
+	// append options
+	options = append(options,
+		asynq.MaxRetry(retryTimes),
+		asynq.Timeout(taskTimeout),
+	)
 
 	return i.Scheduler.Register(cronSpec, task, options...)
 }
