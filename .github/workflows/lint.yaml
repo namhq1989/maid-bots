@@ -21,9 +21,9 @@ jobs:
             ~/.cache/golangci-lint
             ~/.cache/go-build
             ~/go/pkg/mod
-          key: ${{ runner.os }}-golangcilint-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-golangci-${{ hashFiles('**/go.sum') }}
           restore-keys: |
-            ${{ runner.os }}-golangcilint-
+            ${{ runner.os }}-golangci-
       - name: golangci-lint
         uses: reviewdog/action-golangci-lint@v2
         with:
@@ -31,3 +31,4 @@ jobs:
           level: warning
           fail_on_error: true
           golangci_lint_flags: --timeout 2m
+          cache: false
