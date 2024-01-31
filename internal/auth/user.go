@@ -1,4 +1,4 @@
-package service
+package auth
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"github.com/namhq1989/maid-bots/util/appcontext"
 
 	"github.com/namhq1989/maid-bots/internal/dao"
-	modelmongodb "github.com/namhq1989/maid-bots/internal/models/mongodb"
+	modelmongodb "github.com/namhq1989/maid-bots/internal/model/mongodb"
 	"github.com/namhq1989/maid-bots/pkg/sso"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

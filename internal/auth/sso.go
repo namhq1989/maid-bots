@@ -1,4 +1,4 @@
-package service
+package auth
 
 import (
 	"github.com/namhq1989/maid-bots/pkg/sso"

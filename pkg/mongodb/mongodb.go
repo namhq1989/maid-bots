@@ -26,7 +26,7 @@ func Connect(uri, dbName string) {
 	}
 
 	// send a ping to confirm a successful connection
-	if err = client.Database("admin").RunCommand(ctx, bson.D{{"ping", 1}}).Err(); err != nil {
+	if err = client.Database("admin").RunCommand(ctx, bson.M{"ping": 1}).Err(); err != nil {
 		panic(err)
 	}
 
