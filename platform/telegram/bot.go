@@ -3,20 +3,11 @@ package telegram
 import (
 	"context"
 	"fmt"
+	"github.com/namhq1989/maid-bots/util/appcommand"
 	"time"
 
-	"github.com/namhq1989/maid-bots/platform/telegram/command/example"
-
-	"github.com/namhq1989/maid-bots/platform/telegram/command"
-
-	"github.com/namhq1989/maid-bots/config"
-
-	"github.com/namhq1989/maid-bots/platform/telegram/command/help"
-	"github.com/namhq1989/maid-bots/platform/telegram/command/monitor"
-
-	"github.com/go-telegram/bot/models"
-
 	"github.com/go-telegram/bot"
+	"github.com/go-telegram/bot/models"
 )
 
 func Init(enabled bool, token string) {
@@ -36,19 +27,19 @@ func Init(enabled bool, token string) {
 
 	// set commands
 	_, _ = b.SetMyCommands(context.Background(), &bot.SetMyCommandsParams{
-		Commands:     command.Commands,
+		Commands:     commands,
 		Scope:        models.BotCommandScope(&models.BotCommandScopeDefault{}),
 		LanguageCode: "en",
 	})
 
 	// help
-	b.RegisterHandler(bot.HandlerTypeMessageText, config.Commands.Help.WithSlash, bot.MatchTypePrefix, help.Handler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, appcommand.Root.Help.WithSlash, bot.MatchTypePrefix, helpHandler)
 
 	// example
-	b.RegisterHandler(bot.HandlerTypeMessageText, config.Commands.Example.WithSlash, bot.MatchTypePrefix, example.Handler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, appcommand.Root.Example.WithSlash, bot.MatchTypePrefix, exampleHandler)
 
 	// monitor
-	b.RegisterHandler(bot.HandlerTypeMessageText, config.Commands.Monitor.WithSlash, bot.MatchTypePrefix, monitor.Handler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, appcommand.Root.Monitor.WithSlash, bot.MatchTypePrefix, monitorHandler)
 
 	// text
 	b.RegisterHandler(bot.HandlerTypeMessageText, "", bot.MatchTypePrefix, defaultHandler)
@@ -56,4 +47,19 @@ func Init(enabled bool, token string) {
 	go b.Start(context.Background())
 
 	fmt.Printf("⚡️ [telegram]: initialized \n")
+}
+
+var commands = []models.BotCommand{
+	{
+		Command:     appcommand.Root.Help.Base,
+		Description: appcommand.Root.Help.Description,
+	},
+	{
+		Command:     appcommand.Root.Monitor.Base,
+		Description: appcommand.Root.Monitor.Description,
+	},
+	{
+		Command:     appcommand.Root.Example.Base,
+		Description: appcommand.Root.Example.Description,
+	},
 }

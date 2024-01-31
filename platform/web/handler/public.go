@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/namhq1989/maid-bots/internal/monitor"
+	"github.com/namhq1989/maid-bots/internal/command/monitor"
 	routepayload "github.com/namhq1989/maid-bots/platform/web/route/payload"
 	"github.com/namhq1989/maid-bots/util/echocontext"
 	"github.com/namhq1989/maid-bots/util/response"
