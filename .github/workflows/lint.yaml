@@ -26,3 +26,4 @@ jobs:
           reporter: github-pr-review
           level: warning
           fail_on_error: true
+          golangci_lint_flags: --timeout=10m
