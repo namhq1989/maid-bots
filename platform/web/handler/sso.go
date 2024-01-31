@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/namhq1989/maid-bots/internal/service"
+	"github.com/namhq1989/maid-bots/internal/auth"
 	routepayload "github.com/namhq1989/maid-bots/platform/web/route/payload"
 	"github.com/namhq1989/maid-bots/util/echocontext"
 	"github.com/namhq1989/maid-bots/util/response"
@@ -22,7 +22,7 @@ func (SSO) LoginWithGoogle(c echo.Context) error {
 	var (
 		ctx  = echocontext.GetContext(c)
 		body = echocontext.GetBody(c).(routepayload.SSOLoginWithGoogleBody)
-		s    = service.SSO{}
+		s    = auth.SSO{}
 	)
 
 	token, err := s.LoginWithGoogle(ctx, body.Token)
@@ -46,7 +46,7 @@ func (SSO) LoginWithGitHub(c echo.Context) error {
 	var (
 		ctx  = echocontext.GetContext(c)
 		body = echocontext.GetBody(c).(routepayload.SSOLoginWithGitHubBody)
-		s    = service.SSO{}
+		s    = auth.SSO{}
 	)
 
 	token, err := s.LoginWithGitHub(ctx, body.Code)

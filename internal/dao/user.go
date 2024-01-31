@@ -5,7 +5,7 @@ import (
 
 	"github.com/namhq1989/maid-bots/util/appcontext"
 
-	modelmongodb "github.com/namhq1989/maid-bots/internal/models/mongodb"
+	modelmongodb "github.com/namhq1989/maid-bots/internal/model/mongodb"
 	"github.com/namhq1989/maid-bots/pkg/mongodb"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

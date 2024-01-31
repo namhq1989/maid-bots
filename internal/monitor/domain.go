@@ -1,10 +1,11 @@
-package service
+package monitor
 
 import (
 	"fmt"
 
-	modelresponse "github.com/namhq1989/maid-bots/internal/models/response"
-	"github.com/namhq1989/maid-bots/pkg/domain"
+	domain2 "github.com/namhq1989/maid-bots/util/domain"
+
+	modelresponse "github.com/namhq1989/maid-bots/internal/model/response"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 
@@ -18,14 +19,14 @@ func (s Domain) Check(ctx *appcontext.AppContext) (*modelresponse.PublicCheckDom
 	var result = &modelresponse.PublicCheckDomain{}
 
 	// get domain data
-	domainData, err := domain.Parse(s.Name)
+	domainData, err := domain2.Parse(s.Name)
 	if err != nil {
 		ctx.Logger.Error("error parsing domain data", err, appcontext.Fields{})
 		return nil, err
 	}
 
 	// get ssl data
-	sslData, err := domain.CheckSSL(domainData.Name, domainData.Port)
+	sslData, err := domain2.CheckSSL(domainData.Name, domainData.Port)
 	if err != nil {
 		ctx.Logger.Error("error checking domain ssl", err, appcontext.Fields{})
 		return nil, err
@@ -39,13 +40,13 @@ func (s Domain) Check(ctx *appcontext.AppContext) (*modelresponse.PublicCheckDom
 	result.ExpireAt = modelresponse.NewTimeResponse(sslData.ExpireAt)
 
 	// response time
-	result.ResponseTimeInMS, err = domain.MeasureResponseTime(fmt.Sprintf("%s://%s", domainData.Scheme, domainData.Name))
+	result.ResponseTimeInMS, err = domain2.MeasureResponseTime(fmt.Sprintf("%s://%s", domainData.Scheme, domainData.Name))
 	if err == nil {
 		result.IsUp = true
 	}
 
 	// ip
-	result.IPResolves, _ = domain.IPLookup(domainData.Name)
+	result.IPResolves, _ = domain2.IPLookup(domainData.Name)
 
 	return result, err
 }

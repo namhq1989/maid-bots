@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/namhq1989/maid-bots/internal/service"
+	"github.com/namhq1989/maid-bots/internal/monitor"
 	routepayload "github.com/namhq1989/maid-bots/platform/web/route/payload"
 	"github.com/namhq1989/maid-bots/util/echocontext"
 	"github.com/namhq1989/maid-bots/util/response"
@@ -21,7 +21,7 @@ func (Public) CheckDomain(c echo.Context) error {
 	var (
 		ctx   = echocontext.GetContext(c)
 		query = echocontext.GetQuery(c).(routepayload.PublicCheckDomain)
-		s     = service.Domain{Name: query.Domain}
+		s     = monitor.Domain{Name: query.Domain}
 	)
 
 	result, err := s.Check(ctx)

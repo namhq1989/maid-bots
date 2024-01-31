@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/namhq1989/maid-bots/content"
 	"github.com/namhq1989/maid-bots/platform/telegram"
 	"github.com/namhq1989/maid-bots/platform/web/route"
 
@@ -50,6 +51,9 @@ func bootstrap(e *echo.Echo) {
 	// 	return subtle.ConstantTimeCompare([]byte(username), []byte(cfg.QueueUsername)) == 1 &&
 	// 		subtle.ConstantTimeCompare([]byte(password), []byte(cfg.QueuePassword)) == 1, nil
 	// }))
+
+	// load content
+	content.Load()
 
 	// platforms
 	// web
