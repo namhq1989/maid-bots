@@ -3,6 +3,9 @@ package telegram
 import (
 	"context"
 
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
+	"github.com/namhq1989/maid-bots/util/appcommand"
+
 	"github.com/namhq1989/maid-bots/internal/command/monitor"
 
 	"github.com/go-telegram/bot"
@@ -13,9 +16,13 @@ import (
 
 func monitorHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 	var (
-		ctx    = appcontext.New(bgCtx)
+		// apm transaction
+		t = sentryio.NewTransaction(bgCtx, appcommand.Root.Monitor.WithSlash, getAPMTransactionData(update))
+
+		ctx    = appcontext.New(t.Context())
 		result = monitor.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram)
 	)
+	defer t.Finish()
 
 	// respond
 	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{

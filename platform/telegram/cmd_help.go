@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/namhq1989/maid-bots/internal/command/help"
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
+	"github.com/namhq1989/maid-bots/util/appcommand"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -13,9 +15,13 @@ import (
 
 func helpHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 	var (
-		ctx    = appcontext.New(bgCtx)
+		// apm transaction
+		t = sentryio.NewTransaction(bgCtx, appcommand.Root.Help.WithSlash, getAPMTransactionData(update))
+
+		ctx    = appcontext.New(t.Context())
 		result = help.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram)
 	)
+	defer t.Finish()
 
 	// respond
 	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{
