@@ -21,7 +21,7 @@ func (Public) CheckDomain(c echo.Context) error {
 	// 	s     = monitor.Domain{Name: query.Domain}
 	// )
 	//
-	// result, err := s.Check(ctx)
+	// response, err := s.Check(ctx)
 	// if err != nil {
 	// 	return response.R400(c, err.Error(), echo.Map{})
 	// }

@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/namhq1989/maid-bots/config"
-
 	"github.com/go-telegram/bot"
 
 	"github.com/namhq1989/maid-bots/content"
@@ -103,7 +101,7 @@ func (c command) validateArguments(ctx *appcontext.AppContext) error {
 	// value
 	switch c.argTarget {
 	case appcommand.MonitorTargets.Domain.Name:
-		re := `^(https?://)?([a-zA-Z0-9_-]+\.){1,}[a-zA-Z]{2,}(/.*)?$`
+		re := `^([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}$`
 		if !regexp.MustCompile(re).MatchString(c.argValue) {
 			return errors.New("invalid domain format")
 		}
@@ -140,23 +138,9 @@ func (c command) check(ctx *appcontext.AppContext) string {
 	}
 
 	// assign data
-	result.Name = c.argValue
 	result.Target = c.argTarget
 
-	// convert data for platforms
-	var text = ""
-	switch c.platform {
-	case config.Platform.Telegram:
-		text = bot.EscapeMarkdown(result.ToTelegram())
-	case config.Platform.Discord:
-		text = "Discord result"
-		// text = bot.EscapeMarkdown(result.ToDiscord())
-	case config.Platform.Slack:
-		text = "Slack result"
-		// text = bot.EscapeMarkdown(result.ToSlack())
-	}
-
-	return text
+	return bot.EscapeMarkdown(result.ToMarkdown())
 }
 
 func (c command) register(ctx *appcontext.AppContext) string {

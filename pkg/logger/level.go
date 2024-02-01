@@ -2,8 +2,6 @@ package logger
 
 import (
 	"fmt"
-
-	"github.com/sirupsen/logrus"
 )
 
 func (l *Logger) Debug(message string, fields Fields) {
@@ -27,7 +25,5 @@ func (l *Logger) Text(message string) {
 }
 
 func (l *Logger) Print(message string, data interface{}) {
-	l.logger.WithFields(logrus.Fields{
-		"data": fmt.Sprintf("%+v", data),
-	}).Info(message)
+	fmt.Printf("%s: %+v\n", message, data)
 }

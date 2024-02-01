@@ -24,23 +24,29 @@ type CheckSSL struct {
 	Issuer   string        `json:"issuer"`
 }
 
-func (m Check) ToTelegram() string {
+func (m Check) ToMarkdown() string {
 	var status = "Up ✅"
 	if !m.IsUp {
 		status = "Down ❌"
 	}
 
-	var https = "Yes ✅"
+	var https = "https ✅"
 	var isHttps = m.Scheme == "https"
 	if !isHttps {
-		https = "No ❌"
+		https = "http ❌"
 	}
 
-	result := strings.ReplaceAll(content.Result.MonitorCheck.Telegram, "$name", m.Name)
+	result := content.Response.Monitor.Check.Default
+	isFullData := m.Target == appcommand.MonitorTargets.Domain.Name || m.Target == appcommand.MonitorTargets.HTTP.Name
+	if isFullData {
+		result = content.Response.Monitor.Check.Domain
+	}
+
+	result = strings.ReplaceAll(result, "$name", m.Name)
 	result = strings.ReplaceAll(result, "$status", status)
 	result = strings.ReplaceAll(result, "$response_time", fmt.Sprintf("%d", m.ResponseTimeInMS))
 
-	if m.Target == appcommand.MonitorTargets.Domain.Name {
+	if isFullData {
 		result = strings.ReplaceAll(result, "$scheme", https)
 		result = strings.ReplaceAll(result, "$ip_resolves", strings.Join(m.IPResolves, ", "))
 		if isHttps {

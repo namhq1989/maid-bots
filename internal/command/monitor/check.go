@@ -3,6 +3,10 @@ package monitor
 import (
 	"errors"
 	"fmt"
+	"net"
+	"net/http"
+	"net/url"
+	"time"
 
 	modelresponse "github.com/namhq1989/maid-bots/internal/model/response"
 	"github.com/namhq1989/maid-bots/util/appcommand"
@@ -49,7 +53,8 @@ func (c Check) domain(ctx *appcontext.AppContext) (*modelresponse.Check, error) 
 		return nil, err
 	}
 
-	// set result
+	// set response
+	result.Name = domainData.Name
 	result.Scheme = domainData.Scheme
 	result.SSL.Issuer = sslData.Issuer
 	result.SSL.ExpireAt = modelresponse.NewTimeResponse(sslData.ExpireAt)
@@ -67,7 +72,59 @@ func (c Check) domain(ctx *appcontext.AppContext) (*modelresponse.Check, error) 
 }
 
 func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
-	return nil, nil
+	// parse the URL
+	parsedURL, err := url.Parse(c.Value)
+	if err != nil {
+		ctx.Logger.Error("error parsing url data", err, appcontext.Fields{})
+		return nil, err
+	}
+
+	// Send an HTTP HEAD request to the URL
+	resp, err := http.Get(c.Value)
+	if err != nil {
+		ctx.Logger.Error("error making GET request", err, appcontext.Fields{})
+		return nil, err
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	ctx.Logger.Print("resp", resp)
+	fmt.Println("url", resp.Request.URL.String())
+
+	if resp.Request.URL.String() != c.Value {
+		parsedURL, _ = url.Parse(resp.Request.URL.String())
+		c.Value = parsedURL.String()
+	}
+
+	// resolve IP address
+	ipAddr, err := net.ResolveIPAddr("ip", parsedURL.Hostname())
+	if err != nil {
+		ctx.Logger.Error("error resolving ip address", err, appcontext.Fields{})
+		return nil, err
+	}
+
+	// Build the full URL
+	fullURL := parsedURL.String()
+
+	// Measure response time
+	startTime := time.Now()
+	resp, err = http.Get(fullURL)
+	if err != nil {
+		ctx.Logger.Error("error measuring response time", err, appcontext.Fields{})
+		return nil, err
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	// Calculate response time
+	responseTime := time.Since(startTime)
+
+	return &modelresponse.Check{
+		Name:             c.Value,
+		IsUp:             true,
+		ResponseTimeInMS: responseTime.Milliseconds(),
+		Scheme:           parsedURL.Scheme,
+		IPResolves:       []string{ipAddr.String()},
+		SSL:              modelresponse.CheckSSL{},
+	}, nil
 }
 
 func (c Check) tcp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
