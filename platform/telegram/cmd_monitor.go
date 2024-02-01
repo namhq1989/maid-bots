@@ -20,7 +20,7 @@ func monitorHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 		t = sentryio.NewTransaction(bgCtx, appcommand.Root.Monitor.WithSlash, getAPMTransactionData(update))
 
 		ctx    = appcontext.New(t.Context())
-		result = monitor.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram)
+		result = monitor.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram, getUserID(update))
 	)
 	defer t.Finish()
 
@@ -28,7 +28,10 @@ func monitorHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{
 		ChatID:    update.Message.Chat.ID,
 		ParseMode: models.ParseModeMarkdown,
-		Text:      result,
+		LinkPreviewOptions: &models.LinkPreviewOptions{
+			IsDisabled: &isLinkPreviewDisable,
+		},
+		Text: result,
 	}); err != nil {
 		ctx.Logger.Error("send /monitor response", err, appcontext.Fields{})
 	}

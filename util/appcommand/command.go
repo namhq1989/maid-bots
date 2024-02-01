@@ -1,12 +1,17 @@
 package appcommand
 
 type Command struct {
-	Base        string
+	Name        string
 	WithSlash   string
 	Description string
 }
 
-type SubCommand struct {
-	Base        string
+type ArgumentAction struct {
+	Name        string
+	Description string
+}
+
+type ArgumentTarget struct {
+	Name        string
 	Description string
 }

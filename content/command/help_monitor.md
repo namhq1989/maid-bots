@@ -12,6 +12,7 @@ The `/monitor` command allows you to manage and monitor various targets with dif
   `stats` \- get statistic of a specific target by its id
 
 *Targets:*
+  `all` \- for action "list" only \(listing all monitoring targets\)
   `domain` \- domain name
   `http` \- http/https url
   `tcp` \- domain/ip with port
