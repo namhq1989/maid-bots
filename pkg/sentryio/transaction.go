@@ -15,3 +15,9 @@ func NewTransaction(ctx context.Context, name string, data map[string]string) *s
 	}
 	return t
 }
+
+func NewSpan(ctx context.Context, name, description string) *sentry.Span {
+	span := sentry.StartSpan(ctx, name)
+	span.Description = description
+	return span
+}

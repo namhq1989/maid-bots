@@ -27,7 +27,10 @@ func helpHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{
 		ChatID:    update.Message.Chat.ID,
 		ParseMode: models.ParseModeMarkdown,
-		Text:      result,
+		LinkPreviewOptions: &models.LinkPreviewOptions{
+			IsDisabled: &isLinkPreviewDisable,
+		},
+		Text: result,
 	}); err != nil {
 		ctx.Logger.Error("send /help response", err, appcontext.Fields{})
 	}

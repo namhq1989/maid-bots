@@ -18,7 +18,7 @@ func unrecognizedHandler(bgCtx context.Context, b *bot.Bot, update *models.Updat
 		t = sentryio.NewTransaction(bgCtx, "unrecognized", getAPMTransactionData(update))
 
 		ctx    = appcontext.New(t.Context())
-		result = unrecognized.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram)
+		result = unrecognized.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram, getUserID(update))
 	)
 	defer t.Finish()
 
@@ -26,7 +26,10 @@ func unrecognizedHandler(bgCtx context.Context, b *bot.Bot, update *models.Updat
 	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{
 		ChatID:    update.Message.Chat.ID,
 		ParseMode: models.ParseModeMarkdown,
-		Text:      result,
+		LinkPreviewOptions: &models.LinkPreviewOptions{
+			IsDisabled: &isLinkPreviewDisable,
+		},
+		Text: result,
 	}); err != nil {
 		ctx.Logger.Error("send unrecognized response", err, appcontext.Fields{})
 	}

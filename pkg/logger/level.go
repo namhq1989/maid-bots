@@ -2,8 +2,7 @@ package logger
 
 import (
 	"fmt"
-
-	"github.com/sirupsen/logrus"
+	"github.com/goccy/go-json"
 )
 
 func (l *Logger) Debug(message string, fields Fields) {
@@ -26,8 +25,7 @@ func (l *Logger) Text(message string) {
 	l.logger.Info(message)
 }
 
-func (l *Logger) Print(message string, data interface{}) {
-	l.logger.WithFields(logrus.Fields{
-		"data": fmt.Sprintf("%+v", data),
-	}).Info(message)
+func (*Logger) Print(message string, data interface{}) {
+	s, _ := json.MarshalIndent(data, "", "  ")
+	fmt.Printf("%s: %+v\n", message, string(s))
 }

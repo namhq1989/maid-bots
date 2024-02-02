@@ -29,5 +29,8 @@ func Init(echo *echo.Echo, dsn, machine, environment string) {
 	// use as middleware
 	echo.Use(sentryecho.New(sentryecho.Options{}))
 
+	// recover
+	defer sentry.Recover()
+
 	fmt.Printf("⚡️ [sentry.io]: connected \n")
 }

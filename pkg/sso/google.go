@@ -50,7 +50,7 @@ func LoginWithGoogle(ctx *appcontext.AppContext, token string) (*GoogleUserData,
 	// verify that the token was issued to this application
 	if result.AUD != providers.GoogleClientID {
 		err = fmt.Errorf("wrong audience, got %v", result.AUD)
-		ctx.Logger.Error(err.Error(), err, appcontext.Fields{"result": result})
+		ctx.Logger.Error(err.Error(), err, appcontext.Fields{"response": result})
 		return nil, err
 	}
 

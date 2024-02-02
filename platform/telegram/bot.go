@@ -3,7 +3,6 @@ package telegram
 import (
 	"context"
 	"fmt"
-	"regexp"
 	"time"
 
 	"github.com/namhq1989/maid-bots/util/appcommand"
@@ -11,6 +10,8 @@ import (
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 )
+
+var isLinkPreviewDisable = true
 
 func Init(enabled bool, token string) {
 	if !enabled {
@@ -51,21 +52,17 @@ func Init(enabled bool, token string) {
 	fmt.Printf("⚡️ [telegram]: initialized \n")
 }
 
-func generateRegexp(cmd string) *regexp.Regexp {
-	return regexp.MustCompile(fmt.Sprintf(`^%s`, cmd))
-}
-
 var commands = []models.BotCommand{
 	{
-		Command:     appcommand.Root.Help.Base,
+		Command:     appcommand.Root.Help.Name,
 		Description: appcommand.Root.Help.Description,
 	},
 	{
-		Command:     appcommand.Root.Monitor.Base,
+		Command:     appcommand.Root.Monitor.Name,
 		Description: appcommand.Root.Monitor.Description,
 	},
 	{
-		Command:     appcommand.Root.Example.Base,
+		Command:     appcommand.Root.Example.Name,
 		Description: appcommand.Root.Example.Description,
 	},
 }

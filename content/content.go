@@ -6,34 +6,9 @@ import (
 	"path/filepath"
 )
 
-type Example struct {
-	Base    string
-	Monitor string
-}
-
-var Group = struct {
-	Help    string
-	Monitor string
-	Example Example
-}{
-	Help:    "",
-	Monitor: "",
-	Example: Example{
-		Base:    "",
-		Monitor: "",
-	},
-}
-
 func Load() {
-	// help
-	Group.Help = readFile("content/help.md")
-
-	// monitor
-	Group.Monitor = readFile("content/monitor.md")
-
-	// example
-	Group.Example.Base = readFile("content/example.md")
-	Group.Example.Monitor = readFile("content/example_monitor.md")
+	command()
+	response()
 }
 
 func readFile(fPath string) string {

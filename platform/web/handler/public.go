@@ -2,9 +2,6 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/namhq1989/maid-bots/internal/command/monitor"
-	routepayload "github.com/namhq1989/maid-bots/platform/web/route/payload"
-	"github.com/namhq1989/maid-bots/util/echocontext"
 	"github.com/namhq1989/maid-bots/util/response"
 )
 
@@ -18,18 +15,16 @@ type Public struct{}
 // @produce json
 // @router /p/check/domain [get]
 func (Public) CheckDomain(c echo.Context) error {
-	var (
-		ctx   = echocontext.GetContext(c)
-		query = echocontext.GetQuery(c).(routepayload.PublicCheckDomain)
-		s     = monitor.Domain{Name: query.Domain}
-	)
+	// var (
+	// 	ctx   = echocontext.GetContext(c)
+	// 	query = echocontext.GetQuery(c).(routepayload.PublicCheckDomain)
+	// 	s     = monitor.Domain{Name: query.Domain}
+	// )
+	//
+	// response, err := s.Check(ctx)
+	// if err != nil {
+	// 	return response.R400(c, err.Error(), echo.Map{})
+	// }
 
-	result, err := s.Check(ctx)
-	if err != nil {
-		return response.R400(c, err.Error(), echo.Map{})
-	}
-
-	return response.R200(c, "", echo.Map{
-		"result": result,
-	})
+	return response.R200(c, "", echo.Map{})
 }

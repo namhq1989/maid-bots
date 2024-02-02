@@ -11,6 +11,7 @@ import (
 type command struct {
 	message  string
 	platform string
+	userID   string
 }
 
 func (c command) process(ctx *appcontext.AppContext) string {
@@ -29,7 +30,7 @@ func (c command) process(ctx *appcontext.AppContext) string {
 		case appcommand.Root.Example.WithSlash:
 			return example.ProcessMessage(ctx, c.message, c.platform)
 		case appcommand.Root.Monitor.WithSlash:
-			return monitor.ProcessMessage(ctx, c.message, c.platform)
+			return monitor.ProcessMessage(ctx, c.message, c.platform, c.userID)
 		}
 	}
 

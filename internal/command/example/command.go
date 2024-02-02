@@ -23,15 +23,15 @@ func (c command) process(ctx *appcontext.AppContext) string {
 	})
 
 	var (
-		text = content.Group.Example.Base
+		text = content.Command.Example.Base
 		l    = len(arguments)
 	)
 
 	if l == 1 {
 		switch arguments[0] {
-		case appcommand.Root.Monitor.Base:
-			text = content.Group.Example.Monitor
-		case appcommand.Root.Random.Base:
+		case appcommand.Root.Monitor.Name:
+			text = content.Command.Example.Monitor
+		case appcommand.Root.Random.Name:
 			text = "Random examples"
 		}
 	}

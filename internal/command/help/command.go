@@ -23,16 +23,16 @@ func (c command) process(ctx *appcontext.AppContext) string {
 	})
 
 	var (
-		text = content.Group.Help
+		text = content.Command.Help.Base
 		l    = len(arguments)
 	)
 
 	if l == 1 {
 		switch arguments[0] {
-		case appcommand.Root.Monitor.Base:
-			text = content.Group.Monitor
-		case appcommand.Root.Example.Base:
-			text = content.Group.Example.Base
+		case appcommand.Root.Monitor.Name:
+			text = content.Command.Help.Monitor
+		case appcommand.Root.Example.Name:
+			text = content.Command.Example.Base
 		}
 	}
 

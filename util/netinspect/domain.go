@@ -1,33 +1,32 @@
-package domain
+package netinspect
 
 import (
 	"errors"
 	"net/url"
 	"regexp"
 	"strings"
+
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
+
+	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 
-type Information struct {
+type Domain struct {
 	IsHTTPS bool
 	Name    string
 	Scheme  string
 	Port    int
 }
 
-const (
-	schemeHTTP = "http"
-	portHTTP   = 80
+func ParseDomain(ctx *appcontext.AppContext, input string) (*Domain, error) {
+	span := sentryio.NewSpan(ctx.Context, "parse domain", "")
+	defer span.Finish()
 
-	schemeHTTPS = "https"
-	portHTTPS   = 443
-)
-
-func Parse(input string) (*Information, error) {
 	if !isValidDomain(input) {
 		return nil, errors.New("invalid domain name")
 	}
 
-	// add a unrecognized scheme if none is present to help with parsing
+	// add an unrecognized scheme if none is present to help with parsing
 	if !strings.Contains(input, "://") {
 		input = "https://" + input
 	}
@@ -46,16 +45,16 @@ func Parse(input string) (*Information, error) {
 
 	// validate the scheme
 	scheme := parsedURL.Scheme
-	if scheme != schemeHTTP && scheme != schemeHTTPS {
+	if scheme != SchemeHTTP && scheme != SchemeHTTPS {
 		return nil, errors.New("invalid scheme: only http and https are supported")
 	}
 
 	// return the extracted and validated scheme and domain
-	return &Information{
+	return &Domain{
 		Name:    domain,
 		Scheme:  scheme,
 		Port:    getPortFromScheme(scheme),
-		IsHTTPS: scheme == schemeHTTPS,
+		IsHTTPS: scheme == SchemeHTTPS,
 	}, nil
 }
 
@@ -63,12 +62,4 @@ func isValidDomain(domain string) bool {
 	regex := `^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}(/([a-zA-Z0-9/-]+)?)?$`
 	re := regexp.MustCompile(regex)
 	return re.MatchString(domain)
-}
-
-func getPortFromScheme(scheme string) int {
-	if scheme == schemeHTTPS {
-		return portHTTPS
-	}
-
-	return portHTTP
 }
