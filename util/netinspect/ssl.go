@@ -3,9 +3,10 @@ package netinspect
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"net"
 	"time"
+
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
 
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
@@ -24,7 +25,7 @@ func CheckSSL(ctx *appcontext.AppContext, host string, port int) (result *SSL, e
 
 	// get data
 	conn, err := tls.DialWithDialer(&net.Dialer{
-		Timeout: 10 * time.Second,
+		Timeout: tlsTimeout,
 	}, "tcp", net.JoinHostPort(host, fmt.Sprintf("%d", port)), nil)
 	result.IsHTTPS = err == nil
 	if err != nil {

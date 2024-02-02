@@ -26,7 +26,7 @@ func CheckTCP(ctx *appcontext.AppContext, address string) (*TCP, error) {
 
 	// dial
 	startTime := time.Now()
-	conn, err := net.DialTimeout("tcp", address, 5*time.Second)
+	conn, err := net.DialTimeout("tcp", address, tcpTimeout)
 	if err != nil {
 		return nil, fmt.Errorf("error dialing tcp: %s", err.Error())
 	}
