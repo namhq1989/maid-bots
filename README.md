@@ -11,16 +11,13 @@
 
 ---
 
-- [ ] Uptime
-  - [ ] Domain + SSL // doing
-    - [x] Check
-    - [ ] Watch
-    - [ ] List
-    - [ ] Edit
-    - [ ] Remove
-  - [ ] IP:Port
-  - [ ] API
-  - [ ] Ping
+- [ ] Uptime: Domain, HTTP, TCP, ICMP
+  - [ ] Check `domain`, `http`, tcp, icmp // doing
+  - [ ] Watch
+  - [ ] List
+  - [ ] Remove
+  - [ ] Stats
 - [ ] Random
+  - [ ] Ping
   - [ ] Number
   - [ ] Git commit message

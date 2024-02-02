@@ -64,7 +64,7 @@ func (c command) process(ctx *appcontext.AppContext) string {
 		c.argValue = arguments[2]
 
 		if err := c.validateArguments(ctx); err != nil {
-			ctx.Logger.Error("failed to validate arguments", err, appcontext.Fields{})
+			ctx.Logger.Error("validate arguments failed", err, appcontext.Fields{})
 			return err.Error()
 		}
 
@@ -116,7 +116,7 @@ func (c command) validateArguments(ctx *appcontext.AppContext) error {
 			return errors.New("invalid http url format")
 		}
 	case appcommand.MonitorTargets.TCP.Name:
-		re := `^([a-zA-Z0-9_-]+\.){1,}[a-zA-Z]{2,}:\d+$`
+		re := `^[\w.-]+:\d+$`
 		if !regexp.MustCompile(re).MatchString(c.argValue) {
 			return errors.New("invalid tcp format")
 		}
@@ -142,7 +142,7 @@ func (c command) check(ctx *appcontext.AppContext) string {
 		return bot.EscapeMarkdown(err.Error())
 	}
 
-	return bot.EscapeMarkdown(result.ToMarkdown())
+	return bot.EscapeMarkdown(result.ToMarkdown(ctx))
 }
 
 func (c command) register(_ *appcontext.AppContext) string {

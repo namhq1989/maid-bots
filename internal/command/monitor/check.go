@@ -122,8 +122,23 @@ func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	return result, nil
 }
 
-func (Check) tcp(_ *appcontext.AppContext) (*modelresponse.Check, error) {
-	return nil, nil
+func (c Check) tcp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
+	var result = &modelresponse.Check{}
+
+	// get url data
+	tcpData, err := netinspect.CheckTCP(ctx, c.Value)
+	if err != nil {
+		ctx.Logger.Error("error checking tcp data", err, appcontext.Fields{})
+		return nil, err
+	}
+
+	// set data
+	result.Template = content.MonitorTemplateDefault
+	result.ResponseTimeInMS = tcpData.ResponseTimeInMs
+	result.IsUp = true
+	result.Name = c.Value
+
+	return result, nil
 }
 
 func (Check) icmp(_ *appcontext.AppContext) (*modelresponse.Check, error) {
