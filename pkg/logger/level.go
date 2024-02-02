@@ -25,7 +25,7 @@ func (l *Logger) Text(message string) {
 	l.logger.Info(message)
 }
 
-func (l *Logger) Print(message string, data interface{}) {
+func (*Logger) Print(message string, data interface{}) {
 	s, _ := json.MarshalIndent(data, "", "  ")
 	fmt.Printf("%s: %+v\n", message, string(s))
 }

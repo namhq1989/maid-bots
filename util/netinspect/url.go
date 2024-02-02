@@ -29,7 +29,7 @@ func ParseURL(ctx *appcontext.AppContext, input string) (*URL, error) {
 	// parse the URL
 	parsedURL, err := url.Parse(input)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error parsing url: %s", err.Error()))
+		return nil, fmt.Errorf("error parsing url: %s", err.Error())
 	}
 
 	var result = &URL{}
@@ -74,7 +74,7 @@ func ParseURL(ctx *appcontext.AppContext, input string) (*URL, error) {
 func getFinalURL(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return "", errors.New(fmt.Sprintf("error making GET request: %s", err.Error()))
+		return "", fmt.Errorf("error making GET request: %s", err.Error())
 	}
 	defer func() { _ = resp.Body.Close() }()
 

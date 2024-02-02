@@ -3,8 +3,9 @@ package monitor
 import (
 	"errors"
 	"fmt"
-	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"regexp"
+
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
 
 	"github.com/go-telegram/bot"
 
@@ -144,18 +145,18 @@ func (c command) check(ctx *appcontext.AppContext) string {
 	return bot.EscapeMarkdown(result.ToMarkdown())
 }
 
-func (c command) register(ctx *appcontext.AppContext) string {
+func (c command) register(_ *appcontext.AppContext) string {
 	return bot.EscapeMarkdown(fmt.Sprintf("registering %s %s with user %s ...", c.argTarget, c.argValue, c.userID))
 }
 
-func (c command) list(ctx *appcontext.AppContext) string {
+func (c command) list(_ *appcontext.AppContext) string {
 	return bot.EscapeMarkdown(fmt.Sprintf("listing monitoring domains of Telegram user id %s ...", c.userID))
 }
 
-func (c command) remove(ctx *appcontext.AppContext) string {
+func (c command) remove(_ *appcontext.AppContext) string {
 	return bot.EscapeMarkdown(fmt.Sprintf("removing %s %s with user %s ...", c.argTarget, c.argValue, c.userID))
 }
 
-func (c command) stats(ctx *appcontext.AppContext) string {
+func (c command) stats(_ *appcontext.AppContext) string {
 	return bot.EscapeMarkdown(fmt.Sprintf("getting stats of %s %s with user %s ...", c.argTarget, c.argValue, c.userID))
 }

@@ -1,7 +1,6 @@
 package monitor
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/namhq1989/maid-bots/content"
@@ -29,7 +28,7 @@ func (c Check) Process(ctx *appcontext.AppContext) (*modelresponse.Check, error)
 		return c.icmp(ctx)
 	}
 
-	return nil, errors.New(fmt.Sprintf("target %s is not supported", c.Target))
+	return nil, fmt.Errorf("target %s is not supported", c.Target)
 }
 
 func (c Check) domain(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
@@ -81,6 +80,10 @@ func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 
 	// get url data
 	urlData, err := netinspect.ParseURL(ctx, c.Value)
+	if err != nil {
+		ctx.Logger.Error("error parsing url data", err, appcontext.Fields{})
+		return nil, err
+	}
 
 	// check ssl
 	sslData, err := netinspect.CheckSSL(ctx, urlData.Host, urlData.Port)
@@ -106,7 +109,7 @@ func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	if urlData.Type == netinspect.TypeDomain {
 		ipLookup, err := netinspect.IPLookup(ctx, urlData.Host)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("error looking up ip: %s", err.Error()))
+			return nil, fmt.Errorf("error looking up ip: %s", err.Error())
 		}
 		result.IPResolves = ipLookup.List
 	} else {
@@ -119,10 +122,10 @@ func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	return result, nil
 }
 
-func (c Check) tcp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
+func (Check) tcp(_ *appcontext.AppContext) (*modelresponse.Check, error) {
 	return nil, nil
 }
 
-func (c Check) icmp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
+func (Check) icmp(_ *appcontext.AppContext) (*modelresponse.Check, error) {
 	return nil, nil
 }
