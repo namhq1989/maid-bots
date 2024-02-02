@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
+	"github.com/namhq1989/maid-bots/util/appcontext"
+
 	"github.com/namhq1989/maid-bots/content"
 )
 
@@ -22,7 +25,10 @@ type CheckSSL struct {
 	Issuer   string        `json:"issuer"`
 }
 
-func (m Check) ToMarkdown() string {
+func (m Check) ToMarkdown(ctx *appcontext.AppContext) string {
+	span := sentryio.NewSpan(ctx.Context, "convert to markdown", "")
+	defer span.Finish()
+
 	var status = "Up ✅"
 	if !m.IsUp {
 		status = "Down ❌"

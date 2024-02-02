@@ -15,14 +15,17 @@ import (
 )
 
 func monitorHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
-	var (
-		// apm transaction
-		t = sentryio.NewTransaction(bgCtx, appcommand.Root.Monitor.WithSlash, getAPMTransactionData(update))
+	ctx := appcontext.New(bgCtx)
 
-		ctx    = appcontext.New(t.Context())
-		result = monitor.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram, getUserID(update))
-	)
+	// apm transaction
+	t := sentryio.NewTransaction(bgCtx, appcommand.Root.Monitor.WithSlash, getAPMTransactionData(ctx, update))
 	defer t.Finish()
+
+	// re-assign context
+	ctx.Context = t.Context()
+
+	// process
+	result := monitor.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram, getUserID(update))
 
 	// respond
 	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{

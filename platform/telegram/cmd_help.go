@@ -14,14 +14,17 @@ import (
 )
 
 func helpHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
-	var (
-		// apm transaction
-		t = sentryio.NewTransaction(bgCtx, appcommand.Root.Help.WithSlash, getAPMTransactionData(update))
+	ctx := appcontext.New(bgCtx)
 
-		ctx    = appcontext.New(t.Context())
-		result = help.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram)
-	)
+	// apm transaction
+	t := sentryio.NewTransaction(bgCtx, appcommand.Root.Help.WithSlash, getAPMTransactionData(ctx, update))
 	defer t.Finish()
+
+	// re-assign context
+	ctx.Context = t.Context()
+
+	// process
+	result := help.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram)
 
 	// respond
 	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{
