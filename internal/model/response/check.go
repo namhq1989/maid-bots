@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/namhq1989/maid-bots/util/appcommand"
-
 	"github.com/namhq1989/maid-bots/content"
 )
 
 type Check struct {
-	Target           string
+	Template         string
 	Name             string
 	IsUp             bool     `json:"isUp"`
 	ResponseTimeInMS int64    `json:"responseTime"`
@@ -37,8 +35,8 @@ func (m Check) ToMarkdown() string {
 	}
 
 	result := content.Response.Monitor.Check.Default
-	isFullData := m.Target == appcommand.MonitorTargets.Domain.Name || m.Target == appcommand.MonitorTargets.HTTP.Name
-	if isFullData {
+	isTemplateDomain := m.Template == content.MonitorTemplateDomain
+	if isTemplateDomain {
 		result = content.Response.Monitor.Check.Domain
 	}
 
@@ -46,7 +44,7 @@ func (m Check) ToMarkdown() string {
 	result = strings.ReplaceAll(result, "$status", status)
 	result = strings.ReplaceAll(result, "$response_time", fmt.Sprintf("%d", m.ResponseTimeInMS))
 
-	if isFullData {
+	if isTemplateDomain {
 		result = strings.ReplaceAll(result, "$scheme", https)
 		result = strings.ReplaceAll(result, "$ip_resolves", strings.Join(m.IPResolves, ", "))
 		if isHttps {

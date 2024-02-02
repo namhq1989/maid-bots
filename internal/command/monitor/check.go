@@ -3,15 +3,13 @@ package monitor
 import (
 	"errors"
 	"fmt"
-	"net"
-	"net/http"
-	"net/url"
-	"time"
+
+	"github.com/namhq1989/maid-bots/content"
 
 	modelresponse "github.com/namhq1989/maid-bots/internal/model/response"
 	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
-	"github.com/namhq1989/maid-bots/util/domain"
+	"github.com/namhq1989/maid-bots/util/netinspect"
 )
 
 type Check struct {
@@ -40,14 +38,14 @@ func (c Check) domain(ctx *appcontext.AppContext) (*modelresponse.Check, error) 
 	var result = &modelresponse.Check{}
 
 	// get domain data
-	domainData, err := domain.Parse(c.Value)
+	domainData, err := netinspect.ParseDomain(ctx, c.Value)
 	if err != nil {
 		ctx.Logger.Error("error parsing domain data", err, appcontext.Fields{})
 		return nil, err
 	}
 
 	// get ssl data
-	sslData, err := domain.CheckSSL(domainData.Name, domainData.Port)
+	sslData, err := netinspect.CheckSSL(ctx, domainData.Name, domainData.Port)
 	if err != nil {
 		ctx.Logger.Error("error checking domain ssl", err, appcontext.Fields{})
 		return nil, err
@@ -60,71 +58,65 @@ func (c Check) domain(ctx *appcontext.AppContext) (*modelresponse.Check, error) 
 	result.SSL.ExpireAt = modelresponse.NewTimeResponse(sslData.ExpireAt)
 
 	// response time
-	result.ResponseTimeInMS, err = domain.MeasureResponseTime(fmt.Sprintf("%s://%s", domainData.Scheme, domainData.Name))
+	measure, err := netinspect.MeasureResponseTime(ctx, fmt.Sprintf("%s://%s", domainData.Scheme, domainData.Name))
 	if err == nil {
 		result.IsUp = true
 	}
+	result.ResponseTimeInMS = measure.ResponseTimeInMs
 
 	// ip
-	result.IPResolves, _ = domain.IPLookup(domainData.Name)
+	ipLookup, _ := netinspect.IPLookup(ctx, domainData.Name)
+	result.IPResolves = ipLookup.List
+
+	// set template
+	result.Template = content.MonitorTemplateDomain
 
 	return result, err
 }
 
 func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
-	// parse the URL
-	parsedURL, err := url.Parse(c.Value)
+	ctx.AddLogData(appcontext.Fields{"url": c.Value})
+
+	var result = &modelresponse.Check{}
+
+	// get url data
+	urlData, err := netinspect.ParseURL(ctx, c.Value)
+
+	// check ssl
+	sslData, err := netinspect.CheckSSL(ctx, urlData.Host, urlData.Port)
 	if err != nil {
-		ctx.Logger.Error("error parsing url data", err, appcontext.Fields{})
+		ctx.Logger.Error("error checking domain ssl", err, appcontext.Fields{})
 		return nil, err
 	}
 
-	// Send an HTTP HEAD request to the URL
-	resp, err := http.Get(c.Value)
-	if err != nil {
-		ctx.Logger.Error("error making GET request", err, appcontext.Fields{})
-		return nil, err
+	// set response
+	result.Name = urlData.Value
+	result.Scheme = urlData.Scheme
+	result.SSL.Issuer = sslData.Issuer
+	result.SSL.ExpireAt = modelresponse.NewTimeResponse(sslData.ExpireAt)
+
+	// response time
+	measure, err := netinspect.MeasureResponseTime(ctx, urlData.Value)
+	if err == nil {
+		result.IsUp = true
 	}
-	defer func() { _ = resp.Body.Close() }()
+	result.ResponseTimeInMS = measure.ResponseTimeInMs
 
-	ctx.Logger.Print("resp", resp)
-	fmt.Println("url", resp.Request.URL.String())
-
-	if resp.Request.URL.String() != c.Value {
-		parsedURL, _ = url.Parse(resp.Request.URL.String())
-		c.Value = parsedURL.String()
+	// ip look up
+	if urlData.Type == netinspect.TypeDomain {
+		ipLookup, err := netinspect.IPLookup(ctx, urlData.Host)
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("error looking up ip: %s", err.Error()))
+		}
+		result.IPResolves = ipLookup.List
+	} else {
+		result.IPResolves = []string{urlData.Value}
 	}
 
-	// resolve IP address
-	ipAddr, err := net.ResolveIPAddr("ip", parsedURL.Hostname())
-	if err != nil {
-		ctx.Logger.Error("error resolving ip address", err, appcontext.Fields{})
-		return nil, err
-	}
+	// set template
+	result.Template = content.MonitorTemplateDomain
 
-	// Build the full URL
-	fullURL := parsedURL.String()
-
-	// Measure response time
-	startTime := time.Now()
-	resp, err = http.Get(fullURL)
-	if err != nil {
-		ctx.Logger.Error("error measuring response time", err, appcontext.Fields{})
-		return nil, err
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	// Calculate response time
-	responseTime := time.Since(startTime)
-
-	return &modelresponse.Check{
-		Name:             c.Value,
-		IsUp:             true,
-		ResponseTimeInMS: responseTime.Milliseconds(),
-		Scheme:           parsedURL.Scheme,
-		IPResolves:       []string{ipAddr.String()},
-		SSL:              modelresponse.CheckSSL{},
-	}, nil
+	return result, nil
 }
 
 func (c Check) tcp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {

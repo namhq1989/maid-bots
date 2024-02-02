@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"github.com/goccy/go-json"
 )
 
 func (l *Logger) Debug(message string, fields Fields) {
@@ -25,5 +26,6 @@ func (l *Logger) Text(message string) {
 }
 
 func (l *Logger) Print(message string, data interface{}) {
-	fmt.Printf("%s: %+v\n", message, data)
+	s, _ := json.MarshalIndent(data, "", "  ")
+	fmt.Printf("%s: %+v\n", message, string(s))
 }

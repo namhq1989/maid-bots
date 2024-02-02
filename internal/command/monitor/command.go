@@ -3,6 +3,7 @@ package monitor
 import (
 	"errors"
 	"fmt"
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"regexp"
 
 	"github.com/go-telegram/bot"
@@ -83,6 +84,9 @@ func (c command) process(ctx *appcontext.AppContext) string {
 }
 
 func (c command) validateArguments(ctx *appcontext.AppContext) error {
+	span := sentryio.NewSpan(ctx.Context, "validate arguments", "")
+	defer span.Finish()
+
 	// exception for action "list" and target "all"
 	if c.argAction == appcommand.MonitorActions.List.Name && c.argTarget == "all" {
 		return nil
@@ -136,9 +140,6 @@ func (c command) check(ctx *appcontext.AppContext) string {
 	if err != nil {
 		return bot.EscapeMarkdown(err.Error())
 	}
-
-	// assign data
-	result.Target = c.argTarget
 
 	return bot.EscapeMarkdown(result.ToMarkdown())
 }

@@ -1,26 +1,31 @@
-package domain
+package netinspect
 
 import (
 	"crypto/tls"
+	"fmt"
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"net"
-	"strconv"
 	"time"
+
+	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 
-type SSLData struct {
+type SSL struct {
 	IsHTTPS  bool
 	ExpireAt time.Time
 	Issuer   string
 }
 
-func CheckSSL(domain string, port int) (result *SSLData, err error) {
-	result = &SSLData{}
+func CheckSSL(ctx *appcontext.AppContext, host string, port int) (result *SSL, err error) {
+	span := sentryio.NewSpan(ctx.Context, "check ssl", "")
+	defer span.Finish()
 
-	// ssl data
-	portStr := strconv.Itoa(port)
+	result = &SSL{}
+
+	// get data
 	conn, err := tls.DialWithDialer(&net.Dialer{
 		Timeout: 10 * time.Second,
-	}, "tcp", net.JoinHostPort(domain, portStr), nil)
+	}, "tcp", net.JoinHostPort(host, fmt.Sprintf("%d", port)), nil)
 	result.IsHTTPS = err == nil
 	if err != nil {
 		result.ExpireAt = time.Time{}

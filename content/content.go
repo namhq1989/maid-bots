@@ -8,7 +8,7 @@ import (
 
 func Load() {
 	command()
-	result()
+	response()
 }
 
 func readFile(fPath string) string {
