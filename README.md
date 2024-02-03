@@ -12,12 +12,12 @@
 ---
 
 - [ ] Uptime: Domain, HTTP, TCP, ICMP
-  - [ ] Check `domain`, `http`, tcp, icmp // doing
+  - [x] Check `domain`, `http`, `tcp`, `icmp`
   - [ ] Watch
   - [ ] List
   - [ ] Remove
   - [ ] Stats
 - [ ] Random
-  - [ ] Ping
-  - [ ] Number
+  - [ ] String
+  - [ ] Number // doing
   - [ ] Git commit message

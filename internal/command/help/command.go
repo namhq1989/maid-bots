@@ -31,6 +31,8 @@ func (c command) process(ctx *appcontext.AppContext) string {
 		switch arguments[0] {
 		case appcommand.Root.Monitor.Name:
 			text = content.Command.Help.Monitor
+		case appcommand.Root.Random.Name:
+			text = content.Command.Help.Random
 		case appcommand.Root.Example.Name:
 			text = content.Command.Example.Base
 		}

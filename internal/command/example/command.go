@@ -32,7 +32,7 @@ func (c command) process(ctx *appcontext.AppContext) string {
 		case appcommand.Root.Monitor.Name:
 			text = content.Command.Example.Monitor
 		case appcommand.Root.Random.Name:
-			text = "Random examples"
+			text = content.Command.Example.Random
 		}
 	}
 
