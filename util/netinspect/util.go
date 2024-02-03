@@ -12,8 +12,9 @@ const (
 	PortHTTP  = 80
 	PortHTTPS = 443
 
-	tlsTimeout = 5 * time.Second
-	tcpTimeout = 5 * time.Second
+	tlsTimeout  = 5 * time.Second
+	tcpTimeout  = 5 * time.Second
+	icmpTimeout = 5 * time.Second
 )
 
 func getPortFromScheme(scheme string) int {

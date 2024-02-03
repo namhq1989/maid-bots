@@ -1,13 +1,17 @@
 package content
 
 const (
-	MonitorTemplateDefault = "default"
-	MonitorTemplateDomain  = "domain"
+	MonitorTemplateDomain = "domain"
+	MonitorTemplateHTTP   = "http"
+	MonitorTemplateTCP    = "tcp"
+	MonitorTemplateICMP   = "icmp"
 )
 
 type MonitorCheckResult struct {
-	Default string
-	Domain  string
+	Domain string
+	HTTP   string
+	TCP    string
+	ICMP   string
 }
 
 type MonitorResult struct {

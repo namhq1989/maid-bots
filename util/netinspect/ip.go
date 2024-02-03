@@ -4,7 +4,6 @@ import (
 	"net"
 
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
-
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 

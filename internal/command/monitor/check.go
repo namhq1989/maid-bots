@@ -57,7 +57,7 @@ func (c Check) domain(ctx *appcontext.AppContext) (*modelresponse.Check, error) 
 	result.SSL.ExpireAt = modelresponse.NewTimeResponse(sslData.ExpireAt)
 
 	// response time
-	measure, err := netinspect.MeasureResponseTime(ctx, fmt.Sprintf("%s://%s", domainData.Scheme, domainData.Name))
+	measure, err := netinspect.MeasureHTTPResponseTime(ctx, fmt.Sprintf("%s://%s", domainData.Scheme, domainData.Name))
 	if err == nil {
 		result.IsUp = true
 	}
@@ -99,7 +99,7 @@ func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	result.SSL.ExpireAt = modelresponse.NewTimeResponse(sslData.ExpireAt)
 
 	// response time
-	measure, err := netinspect.MeasureResponseTime(ctx, urlData.Value)
+	measure, err := netinspect.MeasureHTTPResponseTime(ctx, urlData.Value)
 	if err == nil {
 		result.IsUp = true
 	}
@@ -117,7 +117,7 @@ func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	}
 
 	// set template
-	result.Template = content.MonitorTemplateDomain
+	result.Template = content.MonitorTemplateHTTP
 
 	return result, nil
 }
@@ -125,22 +125,55 @@ func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 func (c Check) tcp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	var result = &modelresponse.Check{}
 
-	// get url data
-	tcpData, err := netinspect.CheckTCP(ctx, c.Value)
+	// check
+	err := netinspect.CheckTCP(ctx, c.Value)
 	if err != nil {
 		ctx.Logger.Error("error checking tcp data", err, appcontext.Fields{})
 		return nil, err
 	}
 
+	// measure
+	measure, err := netinspect.MeasureTCPResponseTime(ctx, c.Value)
+	if err != nil {
+		ctx.Logger.Error("error measuring tcp data", err, appcontext.Fields{})
+		return nil, err
+	}
+
 	// set data
-	result.Template = content.MonitorTemplateDefault
-	result.ResponseTimeInMS = tcpData.ResponseTimeInMs
+	result.Template = content.MonitorTemplateTCP
+	result.ResponseTimeInMS = measure.ResponseTimeInMs
 	result.IsUp = true
 	result.Name = c.Value
 
 	return result, nil
 }
 
-func (Check) icmp(_ *appcontext.AppContext) (*modelresponse.Check, error) {
-	return nil, nil
+func (c Check) icmp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
+	var result = &modelresponse.Check{}
+
+	// validate
+	if !netinspect.IsValidICMP(ctx, c.Value) {
+		return nil, fmt.Errorf("invalid icmp address %s", c.Value)
+	}
+
+	// check
+	icmpData, err := netinspect.CheckICMP(ctx, c.Value)
+	if err != nil {
+		ctx.Logger.Error("error checking icmp data", err, appcontext.Fields{})
+		return nil, err
+	}
+
+	// set data
+	result.Template = content.MonitorTemplateICMP
+	result.ResponseTimeInMS = icmpData.ResponseTimeInMs
+	result.IsUp = true
+	result.Name = c.Value
+	result.IPResolves = []string{icmpData.IPAddress}
+	result.ICMP = modelresponse.CheckICMP{
+		PackageTransmitted: icmpData.PackageTransmitted,
+		PackageReceived:    icmpData.PackageReceived,
+		PackageLoss:        icmpData.PackageLoss,
+	}
+
+	return result, nil
 }
