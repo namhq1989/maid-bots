@@ -2,7 +2,7 @@
 
 The `/monitor` command allows you to manage and monitor various targets with different commands
 
-`/monitor $action $target $value` 
+`/monitor <action> <target> <value>` 
 
 *Actions:*
   `check` \- perform a one\-time check on the target

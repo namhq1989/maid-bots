@@ -4,3 +4,4 @@
 
 *Actions:*
 `monitor` \- monitor
+`random` \- random
