@@ -9,10 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/namhq1989/maid-bots/util/appcommand"
-
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
-
+	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 
@@ -145,6 +143,7 @@ func (c *Number) random(ctx *appcontext.AppContext) (string, error) {
 	}
 
 	var result strings.Builder
+	result.Grow(c.Parameters.Count*10 + len("Result: \n"))
 	result.WriteString("Result: \n")
 	if c.Parameters.Kind == kindInt {
 		values := map[int]bool{}
@@ -164,32 +163,34 @@ func (c *Number) random(ctx *appcontext.AppContext) (string, error) {
 }
 
 func (c *Number) randomInt(values *map[int]bool) int {
-	rand.New(rand.NewSource(time.Now().UnixNano()))
-	n := rand.Intn(c.Parameters.Max-c.Parameters.Min+1) + c.Parameters.Min
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	n := seededRand.Intn(c.Parameters.Max-c.Parameters.Min+1) + c.Parameters.Min
 	if !c.Parameters.Unique {
 		(*values)[n] = true
 		return n
 	}
-	if _, exists := (*values)[n]; !exists {
-		(*values)[n] = true
-		return n
-	} else {
-		return c.randomInt(values)
+	for {
+		if _, exists := (*values)[n]; !exists {
+			(*values)[n] = true
+			return n
+		}
+		n = seededRand.Intn(c.Parameters.Max-c.Parameters.Min+1) + c.Parameters.Min
 	}
 }
 
 func (c *Number) randomDouble(values *map[float64]bool) float64 {
-	rand.New(rand.NewSource(time.Now().UnixNano()))
-	n := rand.Float64()*(float64(c.Parameters.Max-c.Parameters.Min)) + float64(c.Parameters.Min)
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	n := seededRand.Float64()*(float64(c.Parameters.Max-c.Parameters.Min)) + float64(c.Parameters.Min)
 	if !c.Parameters.Unique {
 		(*values)[n] = true
 		return n
 	}
-	if _, exists := (*values)[n]; !exists {
-		(*values)[n] = true
-		return n
-	} else {
-		return c.randomDouble(values)
+	for {
+		if _, exists := (*values)[n]; !exists {
+			(*values)[n] = true
+			return n
+		}
+		n = seededRand.Float64()*(float64(c.Parameters.Max-c.Parameters.Min)) + float64(c.Parameters.Min)
 	}
 }
 

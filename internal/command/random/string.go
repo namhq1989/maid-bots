@@ -6,6 +6,6 @@ type String struct {
 	Message string
 }
 
-func (c String) Process(_ *appcontext.AppContext) string {
+func (String) Process(_ *appcontext.AppContext) string {
 	return ""
 }
