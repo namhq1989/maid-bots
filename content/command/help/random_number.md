@@ -7,8 +7,8 @@ The `/random number` command allows you to generate random numbers with configur
 *Configurable options:*
   `type` \- specify the type of number \(int or decimal\)\. Default is int
   `min` \- set the minimum value for the random number\. Default is 0
-  `max` \- set the maximum value for the random number\. Default is 1000
-  `count` \- specify the number of random numbers to generate\. Default is 1
+  `max` \- set the maximum value for the random number\. Default is 0
+  `count` \- specify the number of random numbers to generate\. Default is 1. Max is 100
   `unique` \- ensure that generated numbers are unique within the specified range
 
 *Examples:*

@@ -16,6 +16,20 @@ var RandomTargets = struct {
 	},
 }
 
+var RandomParameters = struct {
+	Type   string
+	Min    string
+	Max    string
+	Count  string
+	Unique string
+}{
+	Type:   "type",
+	Min:    "min",
+	Max:    "max",
+	Count:  "count",
+	Unique: "unique",
+}
+
 var RandomTargetsArray = []string{
 	RandomTargets.Number.Name,
 	RandomTargets.String.Name,

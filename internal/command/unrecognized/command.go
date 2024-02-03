@@ -4,6 +4,7 @@ import (
 	"github.com/namhq1989/maid-bots/internal/command/example"
 	"github.com/namhq1989/maid-bots/internal/command/help"
 	"github.com/namhq1989/maid-bots/internal/command/monitor"
+	"github.com/namhq1989/maid-bots/internal/command/random"
 	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
@@ -31,6 +32,8 @@ func (c command) process(ctx *appcontext.AppContext) string {
 			return example.ProcessMessage(ctx, c.message, c.platform)
 		case appcommand.Root.Monitor.WithSlash:
 			return monitor.ProcessMessage(ctx, c.message, c.platform, c.userID)
+		case appcommand.Root.Random.WithSlash:
+			return random.ProcessMessage(ctx, c.message, c.platform, c.userID)
 		}
 	}
 

@@ -7,11 +7,9 @@ import (
 )
 
 type command struct {
-	message   string
-	platform  string
-	userID    string
-	argTarget string
-	argValue  string
+	message  string
+	platform string
+	userID   string
 }
 
 func (c command) process(ctx *appcontext.AppContext) string {
@@ -47,8 +45,19 @@ func (c command) process(ctx *appcontext.AppContext) string {
 		}
 	} else {
 		// 	/monitor $arg1 $arg2
-		c.argTarget = arguments[0]
-		c.argValue = arguments[1]
+
+		switch arguments[0] {
+		case appcommand.RandomTargets.Number.Name:
+			h := Number{
+				Message: c.message,
+			}
+			text = h.Process(ctx)
+		case appcommand.RandomTargets.String.Name:
+			h := String{
+				Message: c.message,
+			}
+			text = h.Process(ctx)
+		}
 
 		return text
 	}
