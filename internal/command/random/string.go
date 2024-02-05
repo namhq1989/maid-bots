@@ -18,11 +18,7 @@ type String struct {
 }
 
 func (c String) Process(ctx *appcontext.AppContext) string {
-	if !c.isTargetValid(ctx) {
-		return "invalid target"
-	}
-
-	var result = ""
+	var result = "invalid target"
 
 	switch c.Target {
 	case appcommand.RandomStringTargets.Person:
@@ -76,13 +72,6 @@ func (c String) Process(ctx *appcontext.AppContext) string {
 	}
 
 	return bot.EscapeMarkdown(result)
-}
-
-func (c String) isTargetValid(ctx *appcontext.AppContext) bool {
-	span := sentryio.NewSpan(ctx.Context, "validate target", "")
-	defer span.Finish()
-
-	return appcommand.IsRandomStringTargetValid(c.Target)
 }
 
 func (String) person(ctx *appcontext.AppContext) string {
@@ -252,22 +241,18 @@ func (c String) creditCard(ctx *appcontext.AppContext) string {
 }
 
 func (String) formatCardNumber(cardNumber string) string {
-	var formattedNumber string
-
+	var builder strings.Builder
 	for i := 0; i < len(cardNumber); i += 4 {
 		endIndex := i + 4
 		if endIndex > len(cardNumber) {
 			endIndex = len(cardNumber)
 		}
-
-		formattedNumber += cardNumber[i:endIndex]
-
+		builder.WriteString(cardNumber[i:endIndex])
 		if endIndex < len(cardNumber) {
-			formattedNumber += " "
+			builder.WriteString(" ")
 		}
 	}
-
-	return formattedNumber
+	return builder.String()
 }
 
 func (String) walletAddress(ctx *appcontext.AppContext) string {

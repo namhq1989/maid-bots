@@ -1,7 +1,5 @@
 package appcommand
 
-import "slices"
-
 var RandomTargets = struct {
 	Number ArgumentTarget
 	String ArgumentTarget
@@ -80,35 +78,4 @@ var RandomStringTargets = struct {
 	WalletAddress: "walletaddress",
 	Pet:           "pet",
 	Emoji:         "emoji",
-}
-
-var RandomStringTargetsArray = []string{
-	RandomStringTargets.Person,
-	RandomStringTargets.Email,
-	RandomStringTargets.Phone,
-	RandomStringTargets.Username,
-	RandomStringTargets.Address,
-	RandomStringTargets.LatLon,
-	RandomStringTargets.Sentence,
-	RandomStringTargets.Paragraph,
-	RandomStringTargets.Quote,
-	RandomStringTargets.UUID,
-	RandomStringTargets.HexColor,
-	RandomStringTargets.RGBColor,
-	RandomStringTargets.URL,
-	RandomStringTargets.ImageURL,
-	RandomStringTargets.Domain,
-	RandomStringTargets.IPv4,
-	RandomStringTargets.IPv6,
-	RandomStringTargets.UserAgent,
-	RandomStringTargets.Date,
-	RandomStringTargets.Timezone,
-	RandomStringTargets.CreditCard,
-	RandomStringTargets.WalletAddress,
-	RandomStringTargets.Pet,
-	RandomStringTargets.Emoji,
-}
-
-func IsRandomStringTargetValid(t string) bool {
-	return slices.Contains(RandomStringTargetsArray, t)
 }
