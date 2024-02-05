@@ -3,6 +3,7 @@ module github.com/namhq1989/maid-bots
 go 1.21
 
 require (
+	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/getsentry/sentry-go v0.25.0
 	github.com/go-telegram/bot v1.0.1
 	github.com/goccy/go-json v0.10.2
@@ -17,7 +18,6 @@ require (
 	github.com/redis/go-redis/v9 v9.3.1
 	github.com/sirupsen/logrus v1.9.3
 	go.mongodb.org/mongo-driver v1.13.1
-	golang.org/x/net v0.20.0
 )
 
 require (
@@ -47,6 +47,7 @@ require (
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	golang.org/x/crypto v0.18.0 // indirect
+	golang.org/x/net v0.20.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect

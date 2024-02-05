@@ -16,7 +16,7 @@ var RandomTargets = struct {
 	},
 }
 
-var RandomParameters = struct {
+var RandomNumberParameters = struct {
 	Type   string
 	Min    string
 	Max    string
@@ -30,11 +30,85 @@ var RandomParameters = struct {
 	Unique: "unique",
 }
 
-var RandomTargetsArray = []string{
-	RandomTargets.Number.Name,
-	RandomTargets.String.Name,
+var RandomStringTargets = struct {
+	Person        string
+	Email         string
+	Phone         string
+	Username      string
+	Address       string
+	LatLon        string
+	Sentence      string
+	Paragraph     string
+	Quote         string
+	UUID          string
+	HexColor      string
+	RGBColor      string
+	URL           string
+	ImageURL      string
+	Domain        string
+	IPv4          string
+	IPv6          string
+	UserAgent     string
+	Date          string
+	Timezone      string
+	CreditCard    string
+	WalletAddress string
+	Pet           string
+	Emoji         string
+}{
+	Person:        "person",
+	Email:         "email",
+	Phone:         "phone",
+	Username:      "username",
+	Address:       "address",
+	LatLon:        "latlon",
+	Sentence:      "sentence",
+	Paragraph:     "paragraph",
+	Quote:         "quote",
+	UUID:          "uuid",
+	HexColor:      "hexcolor",
+	RGBColor:      "rgbcolor",
+	URL:           "url",
+	ImageURL:      "imageurl",
+	Domain:        "domain",
+	IPv4:          "ipv4",
+	IPv6:          "ipv6",
+	UserAgent:     "ua",
+	Date:          "date",
+	Timezone:      "timezone",
+	CreditCard:    "creditcard",
+	WalletAddress: "walletaddress",
+	Pet:           "pet",
+	Emoji:         "emoji",
 }
 
-func IsRandomTargetValid(t string) bool {
-	return slices.Contains(RandomTargetsArray, t)
+var RandomStringTargetsArray = []string{
+	RandomStringTargets.Person,
+	RandomStringTargets.Email,
+	RandomStringTargets.Phone,
+	RandomStringTargets.Username,
+	RandomStringTargets.Address,
+	RandomStringTargets.LatLon,
+	RandomStringTargets.Sentence,
+	RandomStringTargets.Paragraph,
+	RandomStringTargets.Quote,
+	RandomStringTargets.UUID,
+	RandomStringTargets.HexColor,
+	RandomStringTargets.RGBColor,
+	RandomStringTargets.URL,
+	RandomStringTargets.ImageURL,
+	RandomStringTargets.Domain,
+	RandomStringTargets.IPv4,
+	RandomStringTargets.IPv6,
+	RandomStringTargets.UserAgent,
+	RandomStringTargets.Date,
+	RandomStringTargets.Timezone,
+	RandomStringTargets.CreditCard,
+	RandomStringTargets.WalletAddress,
+	RandomStringTargets.Pet,
+	RandomStringTargets.Emoji,
+}
+
+func IsRandomStringTargetValid(t string) bool {
+	return slices.Contains(RandomStringTargetsArray, t)
 }

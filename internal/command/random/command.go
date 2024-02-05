@@ -55,6 +55,7 @@ func (c command) process(ctx *appcontext.AppContext) string {
 		case appcommand.RandomTargets.String.Name:
 			h := String{
 				Message: c.message,
+				Target:  arguments[1],
 			}
 			text = h.Process(ctx)
 		}
