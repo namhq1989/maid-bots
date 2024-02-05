@@ -66,34 +66,34 @@ func (c *Number) mapParametersToStruct(ctx *appcontext.AppContext, list []string
 		value := parts[1]
 
 		switch key {
-		case appcommand.RandomParameters.Type:
+		case appcommand.RandomNumberParameters.Type:
 			if !slices.Contains(validKinds, value) {
 				continue
 			}
 			parameters.Kind = value
 			totalMatchedParams++
-		case appcommand.RandomParameters.Min:
+		case appcommand.RandomNumberParameters.Min:
 			v, err := strconv.Atoi(value)
 			if err != nil {
 				continue
 			}
 			parameters.Min = v
 			totalMatchedParams++
-		case appcommand.RandomParameters.Max:
+		case appcommand.RandomNumberParameters.Max:
 			v, err := strconv.Atoi(value)
 			if err != nil {
 				continue
 			}
 			parameters.Max = v
 			totalMatchedParams++
-		case appcommand.RandomParameters.Count:
+		case appcommand.RandomNumberParameters.Count:
 			v, err := strconv.Atoi(value)
 			if err != nil {
 				continue
 			}
 			parameters.Count = v
 			totalMatchedParams++
-		case appcommand.RandomParameters.Unique:
+		case appcommand.RandomNumberParameters.Unique:
 			v, err := strconv.ParseBool(value)
 			if err != nil {
 				continue
