@@ -34,11 +34,39 @@ func Connect(uri, dbName string) {
 
 	db = client.Database(dbName)
 
+	// time series
+	createTimeSeriesCollections()
+
 	// index
 	go colIndexes()
 }
 
-// UserCol ...
+func createTimeSeriesCollections() {
+	var (
+		ctx = context.Background()
+	)
+
+	// health-check-records
+	{
+		metaField := "monitor"
+		opts := options.CreateCollection().SetTimeSeriesOptions(
+			&options.TimeSeriesOptions{
+				TimeField: "timestamp",
+				MetaField: &metaField,
+			},
+		)
+		if err := db.CreateCollection(ctx, collectionNames.HealthCheckRecord, opts); err != nil {
+			panic(err)
+		}
+	}
+}
+
 func UserCol() *mongo.Collection {
-	return db.Collection("users")
+	return db.Collection(collectionNames.User)
+}
+func MonitorCol() *mongo.Collection {
+	return db.Collection(collectionNames.Monitor)
+}
+func HealthCheckRecordCol() *mongo.Collection {
+	return db.Collection(collectionNames.HealthCheckRecord)
 }

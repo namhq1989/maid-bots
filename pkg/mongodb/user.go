@@ -1,4 +1,4 @@
-package modelmongodb
+package mongodb
 
 import (
 	"time"

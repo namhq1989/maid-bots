@@ -14,6 +14,8 @@ import (
 // Indexes ...
 func colIndexes() {
 	indexUser()
+	indexMonitor()
+	indexHealthCheckRecord()
 }
 
 func indexUser() {
@@ -24,8 +26,41 @@ func indexUser() {
 		{
 			Keys: bson.M{"github.id": 1},
 		},
+		{
+			Keys: bson.M{"platform.telegram": 1},
+		},
+		{
+			Keys: bson.M{"platform.slack": 1},
+		},
+		{
+			Keys: bson.M{"platform.discord": 1},
+		},
 	}
 	processIndex(UserCol(), indexes)
+}
+
+func indexMonitor() {
+	indexes := []mongo.IndexModel{
+		{
+			Keys: bson.M{"owner": 1, "code": 1, "createdAt": -1},
+		},
+		{
+			Keys: bson.M{"owner": 1, "type": 1, "createdAt": -1},
+		},
+	}
+	processIndex(MonitorCol(), indexes)
+}
+
+func indexHealthCheckRecord() {
+	indexes := []mongo.IndexModel{
+		{
+			Keys: bson.M{"owner": 1, "type": 1, "status": 1, "createdAt": -1},
+		},
+		{
+			Keys: bson.M{"owner": 1, "code": 1},
+		},
+	}
+	processIndex(HealthCheckRecordCol(), indexes)
 }
 
 // process ...

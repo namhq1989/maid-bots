@@ -131,13 +131,13 @@ func (c command) validateArguments(ctx *appcontext.AppContext) error {
 }
 
 func (c command) check(ctx *appcontext.AppContext) string {
-	check := Check{
+	h := Check{
 		Target: c.argTarget,
 		Value:  c.argValue,
 	}
 
 	// process
-	result, err := check.Process(ctx)
+	result, err := h.Process(ctx)
 	if err != nil {
 		return bot.EscapeMarkdown(err.Error())
 	}
@@ -145,8 +145,21 @@ func (c command) check(ctx *appcontext.AppContext) string {
 	return bot.EscapeMarkdown(result.ToMarkdown(ctx))
 }
 
-func (c command) register(_ *appcontext.AppContext) string {
-	return bot.EscapeMarkdown(fmt.Sprintf("registering %s %s with user %s ...", c.argTarget, c.argValue, c.userID))
+func (c command) register(ctx *appcontext.AppContext) string {
+	h := Register{
+		Target:   c.argTarget,
+		Value:    c.argValue,
+		Platform: c.platform,
+		UserID:   c.userID,
+	}
+
+	// process
+	result, err := h.Process(ctx)
+	if err != nil {
+		return bot.EscapeMarkdown(err.Error())
+	}
+
+	return bot.EscapeMarkdown(result)
 }
 
 func (c command) list(_ *appcontext.AppContext) string {
