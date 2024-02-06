@@ -2,13 +2,14 @@ package netinspect
 
 import (
 	"errors"
+	"net"
+
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcontext"
-	"net"
 )
 
 func CheckTCP(ctx *appcontext.AppContext, address string) error {
-	span := sentryio.NewSpan(ctx.Context, "check tcp", "")
+	span := sentryio.NewSpan(ctx.Context, "[util][netinspect] check tcp")
 	defer span.Finish()
 
 	if !isValidTCP(address) {

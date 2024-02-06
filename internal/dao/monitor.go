@@ -2,12 +2,16 @@ package dao
 
 import (
 	"github.com/namhq1989/maid-bots/pkg/mongodb"
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 
 type Monitor struct{}
 
 func (Monitor) InsertOne(ctx *appcontext.AppContext, doc mongodb.Monitor) error {
+	span := sentryio.NewSpan(ctx.Context, "[dao][monitor] insert one")
+	defer span.Finish()
+
 	var (
 		col = mongodb.MonitorCol()
 	)
@@ -20,6 +24,9 @@ func (Monitor) InsertOne(ctx *appcontext.AppContext, doc mongodb.Monitor) error 
 }
 
 func (Monitor) CountByCondition(ctx *appcontext.AppContext, condition interface{}) (int64, error) {
+	span := sentryio.NewSpan(ctx.Context, "[dao][monitor] count by condition")
+	defer span.Finish()
+
 	var (
 		col = mongodb.MonitorCol()
 	)

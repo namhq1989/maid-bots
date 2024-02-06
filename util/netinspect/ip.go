@@ -12,7 +12,7 @@ type IP struct {
 }
 
 func IPLookup(ctx *appcontext.AppContext, host string) (*IP, error) {
-	span := sentryio.NewSpan(ctx.Context, "ip lookup", "")
+	span := sentryio.NewSpan(ctx.Context, "[util][netinspect] ip look up")
 	defer span.Finish()
 
 	ips, err := net.LookupIP(host)

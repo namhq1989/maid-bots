@@ -24,6 +24,9 @@ type command struct {
 }
 
 func (c command) process(ctx *appcontext.AppContext) string {
+	span := sentryio.NewSpan(ctx.Context, "[monitor][check] process")
+	defer span.Finish()
+
 	var (
 		arguments = appcommand.ExtractParameters(c.message)
 	)
@@ -85,7 +88,7 @@ func (c command) process(ctx *appcontext.AppContext) string {
 }
 
 func (c command) validateArguments(ctx *appcontext.AppContext) error {
-	span := sentryio.NewSpan(ctx.Context, "validate arguments", "")
+	span := sentryio.NewSpan(ctx.Context, "[monitor][check] validate arguments")
 	defer span.Finish()
 
 	// exception for action "list" and target "all"

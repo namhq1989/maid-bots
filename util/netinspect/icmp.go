@@ -17,7 +17,7 @@ type ICMP struct {
 }
 
 func IsValidICMP(ctx *appcontext.AppContext, input string) bool {
-	span := sentryio.NewSpan(ctx.Context, "validate icmp", "")
+	span := sentryio.NewSpan(ctx.Context, "[util][netinspect] is valid icmp")
 	defer span.Finish()
 
 	ip := net.ParseIP(input)
@@ -31,7 +31,7 @@ func IsValidICMP(ctx *appcontext.AppContext, input string) bool {
 }
 
 func CheckICMP(ctx *appcontext.AppContext, address string) (*ICMP, error) {
-	span := sentryio.NewSpan(ctx.Context, "check icmp", "")
+	span := sentryio.NewSpan(ctx.Context, "[util][netinspect] check icmp")
 	defer span.Finish()
 
 	// setup pinger

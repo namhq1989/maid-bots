@@ -34,7 +34,7 @@ var (
 )
 
 func (c *Number) splitMessageAndCollectParameters(ctx *appcontext.AppContext) ([]string, error) {
-	span := sentryio.NewSpan(ctx.Context, "split message and collect parameters", "")
+	span := sentryio.NewSpan(ctx.Context, "split message and collect parameters")
 	defer span.Finish()
 
 	parts := strings.Fields(c.Message)
@@ -45,7 +45,7 @@ func (c *Number) splitMessageAndCollectParameters(ctx *appcontext.AppContext) ([
 }
 
 func (c *Number) mapParametersToStruct(ctx *appcontext.AppContext, list []string) error {
-	span := sentryio.NewSpan(ctx.Context, "map parameters to struct", "")
+	span := sentryio.NewSpan(ctx.Context, "map parameters to struct")
 	defer span.Finish()
 
 	var (
@@ -114,7 +114,7 @@ func (c *Number) mapParametersToStruct(ctx *appcontext.AppContext, list []string
 }
 
 func (c *Number) random(ctx *appcontext.AppContext) (string, error) {
-	span := sentryio.NewSpan(ctx.Context, "generate random number", "")
+	span := sentryio.NewSpan(ctx.Context, "generate random number")
 	defer span.Finish()
 
 	if c.Parameters == nil {

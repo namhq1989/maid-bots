@@ -21,15 +21,15 @@ const (
 
 type Monitor struct{}
 
-func (s Monitor) randomCode(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "[service] random code", "")
+func (s Monitor) randomCode(ctx *appcontext.AppContext, ownerID primitive.ObjectID) string {
+	span := sentryio.NewSpan(ctx.Context, "[service][monitor] random code")
 	defer span.Finish()
 
 	var code = ""
 
 	for {
 		code = random.StringWithLength(ctx, codeLength)
-		exists := s.isCodeExisted(ctx, code)
+		exists := s.isCodeExisted(ctx, code, ownerID)
 		if !exists {
 			break
 		}
@@ -38,11 +38,15 @@ func (s Monitor) randomCode(ctx *appcontext.AppContext) string {
 	return code
 }
 
-func (Monitor) isCodeExisted(ctx *appcontext.AppContext, code string) bool {
+func (Monitor) isCodeExisted(ctx *appcontext.AppContext, code string, ownerID primitive.ObjectID) bool {
+	span := sentryio.NewSpan(ctx.Context, "[service][monitor] is code existed")
+	defer span.Finish()
+
 	var (
 		d         = dao.Monitor{}
-		condition = bson.M{
-			"code": code,
+		condition = bson.D{
+			{"owner", ownerID},
+			{"code", code},
 		}
 	)
 
@@ -51,6 +55,9 @@ func (Monitor) isCodeExisted(ctx *appcontext.AppContext, code string) bool {
 }
 
 func (Monitor) IsTargetExisted(ctx *appcontext.AppContext, monitorType mongodb.MonitorType, target string, userID primitive.ObjectID) bool {
+	span := sentryio.NewSpan(ctx.Context, "[service][monitor] is target existed")
+	defer span.Finish()
+
 	var (
 		d         = dao.Monitor{}
 		condition = bson.D{
@@ -65,12 +72,12 @@ func (Monitor) IsTargetExisted(ctx *appcontext.AppContext, monitorType mongodb.M
 }
 
 func (s Monitor) CreateDomain(ctx *appcontext.AppContext, domain, scheme string, ownerID primitive.ObjectID) (*mongodb.Monitor, error) {
-	span := sentryio.NewSpan(ctx.Context, "[service] create domain", "")
+	span := sentryio.NewSpan(ctx.Context, "[service][monitor] create domain")
 	defer span.Finish()
 
 	var (
 		d    = dao.Monitor{}
-		code = s.randomCode(ctx)
+		code = s.randomCode(ctx, ownerID)
 	)
 
 	var doc = mongodb.Monitor{

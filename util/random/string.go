@@ -14,7 +14,7 @@ var (
 )
 
 func StringWithLength(ctx *appcontext.AppContext, l int) string {
-	span := sentryio.NewSpan(ctx.Context, "[util] random string with length", "")
+	span := sentryio.NewSpan(ctx.Context, "[util][random] string with length")
 	defer span.Finish()
 
 	randSeed := rand.New(rand.NewSource(time.Now().UnixNano()))

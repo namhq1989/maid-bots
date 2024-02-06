@@ -2,8 +2,10 @@ package service
 
 import (
 	"fmt"
-	"github.com/namhq1989/maid-bots/config"
 	"time"
+
+	"github.com/namhq1989/maid-bots/config"
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
 
 	"github.com/namhq1989/maid-bots/pkg/mongodb"
 
@@ -17,6 +19,9 @@ import (
 type User struct{}
 
 func (User) FindByGitHubID(ctx *appcontext.AppContext, githubID string) (*mongodb.User, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][user] find by GitHub id")
+	defer span.Finish()
+
 	var (
 		d         = dao.User{}
 		condition = bson.M{
@@ -28,6 +33,9 @@ func (User) FindByGitHubID(ctx *appcontext.AppContext, githubID string) (*mongod
 }
 
 func (User) FindByGoogleID(ctx *appcontext.AppContext, googleID string) (*mongodb.User, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][user] find by Google id")
+	defer span.Finish()
+
 	var (
 		d         = dao.User{}
 		condition = bson.M{
@@ -39,6 +47,9 @@ func (User) FindByGoogleID(ctx *appcontext.AppContext, googleID string) (*mongod
 }
 
 func (User) CreateWithGitHubData(ctx *appcontext.AppContext, githubData sso.GitHubUserData) (*mongodb.User, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][user] create with GitHub data")
+	defer span.Finish()
+
 	var (
 		d = dao.User{}
 	)
@@ -64,6 +75,9 @@ func (User) CreateWithGitHubData(ctx *appcontext.AppContext, githubData sso.GitH
 }
 
 func (User) CreateWithGoogleData(ctx *appcontext.AppContext, googleData sso.GoogleUserData) (*mongodb.User, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][user] create with Google data")
+	defer span.Finish()
+
 	var (
 		d = dao.User{}
 	)
@@ -89,6 +103,9 @@ func (User) CreateWithGoogleData(ctx *appcontext.AppContext, googleData sso.Goog
 }
 
 func (User) FindOrCreateWithPlatformID(ctx *appcontext.AppContext, platform string, id string) (*mongodb.User, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][user] find or create with platform id")
+	defer span.Finish()
+
 	var (
 		d         = dao.User{}
 		condition = bson.M{
@@ -110,7 +127,7 @@ func (User) FindOrCreateWithPlatformID(ctx *appcontext.AppContext, platform stri
 	// create new user
 	user = &mongodb.User{
 		ID:        mongodb.NewObjectID(),
-		Name:      "",
+		Name:      "Anonymous",
 		Avatar:    "",
 		Platform:  mongodb.UserPlatform{},
 		Google:    nil,

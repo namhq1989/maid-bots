@@ -3,6 +3,8 @@ package dao
 import (
 	"errors"
 
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
+
 	"github.com/namhq1989/maid-bots/util/appcontext"
 
 	"github.com/namhq1989/maid-bots/pkg/mongodb"
@@ -13,6 +15,9 @@ import (
 type User struct{}
 
 func (User) FindOneByCondition(ctx *appcontext.AppContext, condition interface{}, opts ...*options.FindOneOptions) (doc *mongodb.User, err error) {
+	span := sentryio.NewSpan(ctx.Context, "[dao][user] find one by condition")
+	defer span.Finish()
+
 	var (
 		col = mongodb.UserCol()
 	)
@@ -26,6 +31,9 @@ func (User) FindOneByCondition(ctx *appcontext.AppContext, condition interface{}
 }
 
 func (User) InsertOne(ctx *appcontext.AppContext, doc mongodb.User) error {
+	span := sentryio.NewSpan(ctx.Context, "[dao][user] insert one")
+	defer span.Finish()
+
 	var (
 		col = mongodb.UserCol()
 	)

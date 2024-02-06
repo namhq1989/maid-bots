@@ -19,7 +19,7 @@ type Domain struct {
 }
 
 func ParseDomain(ctx *appcontext.AppContext, input string) (*Domain, error) {
-	span := sentryio.NewSpan(ctx.Context, "parse domain", "")
+	span := sentryio.NewSpan(ctx.Context, "[util][netinspect] parse domain")
 	defer span.Finish()
 
 	if !isValidDomain(input) {

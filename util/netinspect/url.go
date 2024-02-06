@@ -23,7 +23,7 @@ type URL struct {
 }
 
 func ParseURL(ctx *appcontext.AppContext, input string) (*URL, error) {
-	span := sentryio.NewSpan(ctx.Context, "parse url", "")
+	span := sentryio.NewSpan(ctx.Context, "[util][netinspect] parse url")
 	defer span.Finish()
 
 	// parse the URL
@@ -55,7 +55,7 @@ func ParseURL(ctx *appcontext.AppContext, input string) (*URL, error) {
 	} else {
 		if parsedURL.Scheme == SchemeHTTP {
 			// get final url
-			finalURL, err := getFinalURL(input)
+			finalURL, err := getFinalURL(ctx, input)
 			if err == nil {
 				parsedURL, _ = url.Parse(finalURL)
 			}
@@ -71,7 +71,10 @@ func ParseURL(ctx *appcontext.AppContext, input string) (*URL, error) {
 	return result, nil
 }
 
-func getFinalURL(url string) (string, error) {
+func getFinalURL(ctx *appcontext.AppContext, url string) (string, error) {
+	span := sentryio.NewSpan(ctx.Context, "[util][netinspect] get final url")
+	defer span.Finish()
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", fmt.Errorf("error making GET request: %s", err.Error())

@@ -22,6 +22,7 @@ func Init(echo *echo.Echo, dsn, machine, environment string) {
 		TracesSampler: func(ctx sentry.SamplingContext) float64 {
 			return 1.0
 		},
+		ProfilesSampleRate: 1.0,
 	}); err != nil {
 		panic(err)
 	}

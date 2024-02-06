@@ -16,7 +16,7 @@ type Measure struct {
 }
 
 func MeasureHTTPResponseTime(ctx *appcontext.AppContext, url string) (*Measure, error) {
-	span := sentryio.NewSpan(ctx.Context, "measure response time", "")
+	span := sentryio.NewSpan(ctx.Context, "[util][netinspect] measure http response time")
 	defer span.Finish()
 
 	startTime := time.Now()
@@ -33,7 +33,7 @@ func MeasureHTTPResponseTime(ctx *appcontext.AppContext, url string) (*Measure, 
 }
 
 func MeasureTCPResponseTime(ctx *appcontext.AppContext, address string) (*Measure, error) {
-	span := sentryio.NewSpan(ctx.Context, "measure tcp response time", "")
+	span := sentryio.NewSpan(ctx.Context, "[util][netinspect] measure tcp response time")
 	defer span.Finish()
 
 	// dial
