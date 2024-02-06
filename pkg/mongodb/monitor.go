@@ -17,14 +17,14 @@ const (
 
 type Monitor struct {
 	ID        primitive.ObjectID `bson:"_id"`
-	Owner     primitive.ObjectID `bson:"user"` // main factor
+	Owner     primitive.ObjectID `bson:"owner"` // main factor
 	Code      string             `bson:"code"`
-	Type      string             `bson:"type"`
+	Type      MonitorType        `bson:"type"`
+	Target    string             `bson:"target"`
 	Data      MonitorMetadata    `bson:"data"`
 	CreatedAt time.Time          `bson:"createdAt"`
 }
 
 type MonitorMetadata struct {
-	Value  string `bson:"value"`
 	Scheme string `bson:"scheme,omitempty"`
 }

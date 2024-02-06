@@ -42,10 +42,10 @@ func indexUser() {
 func indexMonitor() {
 	indexes := []mongo.IndexModel{
 		{
-			Keys: bson.M{"owner": 1, "code": 1, "createdAt": -1},
+			Keys: bson.D{{"owner", 1}, {"code", 1}, {"createdAt", -1}},
 		},
 		{
-			Keys: bson.M{"owner": 1, "type": 1, "createdAt": -1},
+			Keys: bson.D{{"owner", 1}, {"type", 1}, {"createdAt", -1}},
 		},
 	}
 	processIndex(MonitorCol(), indexes)
@@ -54,10 +54,10 @@ func indexMonitor() {
 func indexHealthCheckRecord() {
 	indexes := []mongo.IndexModel{
 		{
-			Keys: bson.M{"owner": 1, "type": 1, "status": 1, "createdAt": -1},
+			Keys: bson.D{{"owner", 1}, {"type", 1}, {"status", 1}, {"createdAt", -1}},
 		},
 		{
-			Keys: bson.M{"owner": 1, "code": 1},
+			Keys: bson.D{{"owner", 1}, {"code", 1}, {"createdAt", -1}},
 		},
 	}
 	processIndex(HealthCheckRecordCol(), indexes)

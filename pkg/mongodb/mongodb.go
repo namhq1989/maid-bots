@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -35,30 +37,10 @@ func Connect(uri, dbName string) {
 	db = client.Database(dbName)
 
 	// time series
-	createTimeSeriesCollections()
+	colTimeSeries()
 
 	// index
 	go colIndexes()
-}
-
-func createTimeSeriesCollections() {
-	var (
-		ctx = context.Background()
-	)
-
-	// health-check-records
-	{
-		metaField := "monitor"
-		opts := options.CreateCollection().SetTimeSeriesOptions(
-			&options.TimeSeriesOptions{
-				TimeField: "timestamp",
-				MetaField: &metaField,
-			},
-		)
-		if err := db.CreateCollection(ctx, collectionNames.HealthCheckRecord, opts); err != nil {
-			panic(err)
-		}
-	}
 }
 
 func UserCol() *mongo.Collection {
@@ -69,4 +51,8 @@ func MonitorCol() *mongo.Collection {
 }
 func HealthCheckRecordCol() *mongo.Collection {
 	return db.Collection(collectionNames.HealthCheckRecord)
+}
+
+func NewObjectID() primitive.ObjectID {
+	return primitive.NewObjectID()
 }

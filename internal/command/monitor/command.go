@@ -159,7 +159,7 @@ func (c command) register(ctx *appcontext.AppContext) string {
 		return bot.EscapeMarkdown(err.Error())
 	}
 
-	return bot.EscapeMarkdown(result)
+	return result
 }
 
 func (c command) list(_ *appcontext.AppContext) string {

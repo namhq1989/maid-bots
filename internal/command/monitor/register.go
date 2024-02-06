@@ -2,7 +2,11 @@ package monitor
 
 import (
 	"fmt"
+
+	"github.com/namhq1989/maid-bots/pkg/mongodb"
+
 	modelresponse "github.com/namhq1989/maid-bots/internal/model/response"
+	"github.com/namhq1989/maid-bots/internal/service"
 	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
@@ -41,7 +45,29 @@ func (c Register) Process(ctx *appcontext.AppContext) (string, error) {
 }
 
 func (c Register) domain(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
-	return "", nil
+	var (
+		userSvc    = service.User{}
+		monitorSvc = service.Monitor{}
+	)
+
+	// find user first
+	user, err := userSvc.FindOrCreateWithPlatformID(ctx, c.Platform, c.UserID)
+	if err != nil {
+		return "", err
+	}
+
+	// check domain is existed or not
+	if isTargetExisted := monitorSvc.IsTargetExisted(ctx, mongodb.MonitorTypeDomain, checkData.Name, user.ID); isTargetExisted {
+		return "", fmt.Errorf("domain %s is already registered", checkData.Name)
+	}
+
+	// create monitor
+	doc, err := monitorSvc.CreateDomain(ctx, checkData.Name, checkData.Scheme, user.ID)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("domain `%s` has been successfully registered with id `%s`", checkData.Name, doc.Code), nil
 }
 
 func (c Register) http(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
