@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
+
 	"github.com/namhq1989/maid-bots/config"
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
 
@@ -85,7 +87,6 @@ func (User) CreateWithGoogleData(ctx *appcontext.AppContext, googleData sso.Goog
 	user := mongodb.User{
 		ID:     mongodb.NewObjectID(),
 		Name:   googleData.Name,
-		Avatar: googleData.Avatar,
 		GitHub: nil,
 		Google: &mongodb.UserSocialProviderInformation{
 			ID:     googleData.ID,
@@ -102,14 +103,14 @@ func (User) CreateWithGoogleData(ctx *appcontext.AppContext, googleData sso.Goog
 	return &user, nil
 }
 
-func (User) FindOrCreateWithPlatformID(ctx *appcontext.AppContext, platform string, id string) (*mongodb.User, error) {
+func (User) FindOrCreateWithPlatformID(ctx *appcontext.AppContext, platform string, u modelcommand.User) (*mongodb.User, error) {
 	span := sentryio.NewSpan(ctx.Context, "[service][user] find or create with platform id")
 	defer span.Finish()
 
 	var (
 		d         = dao.User{}
 		condition = bson.M{
-			fmt.Sprintf("platform.%s", platform): id,
+			fmt.Sprintf("platform.%s", platform): u.ID,
 		}
 	)
 
@@ -127,8 +128,8 @@ func (User) FindOrCreateWithPlatformID(ctx *appcontext.AppContext, platform stri
 	// create new user
 	user = &mongodb.User{
 		ID:        mongodb.NewObjectID(),
-		Name:      "Anonymous",
-		Avatar:    "",
+		Name:      u.Name,
+		Username:  u.Username,
 		Platform:  mongodb.UserPlatform{},
 		Google:    nil,
 		GitHub:    nil,
@@ -137,11 +138,11 @@ func (User) FindOrCreateWithPlatformID(ctx *appcontext.AppContext, platform stri
 
 	switch platform {
 	case config.Platform.Telegram:
-		user.Platform.Telegram = id
+		user.Platform.Telegram = u.ID
 	case config.Platform.Slack:
-		user.Platform.Slack = id
+		user.Platform.Slack = u.ID
 	case config.Platform.Discord:
-		user.Platform.Discord = id
+		user.Platform.Discord = u.ID
 	}
 
 	if err = d.InsertOne(ctx, *user); err != nil {

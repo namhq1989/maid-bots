@@ -9,6 +9,7 @@ import (
 type User struct {
 	ID        primitive.ObjectID             `bson:"_id"`
 	Name      string                         `bson:"name"`
+	Username  string                         `bson:"username"`
 	Avatar    string                         `bson:"avatar"`
 	Platform  UserPlatform                   `bson:"platform"`
 	Google    *UserSocialProviderInformation `bson:"google"`

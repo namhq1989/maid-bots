@@ -70,10 +70,10 @@ var MonitorTargetsArray = []string{
 	MonitorTargets.TCP.Name,
 }
 
-func IsMonitorActionValid(a string) bool {
-	return slices.Contains(MonitorActionsArray, a)
+func IsMonitorActionValid(v string) bool {
+	return slices.Contains(MonitorActionsArray, v)
 }
 
-func IsMonitorTargetValid(t string) bool {
-	return slices.Contains(MonitorTargetsArray, t)
+func IsMonitorTargetValid(v string) bool {
+	return slices.Contains(MonitorTargetsArray, v)
 }

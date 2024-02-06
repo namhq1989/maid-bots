@@ -3,6 +3,8 @@ package monitor
 import (
 	"fmt"
 
+	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
+
 	"github.com/namhq1989/maid-bots/pkg/mongodb"
 
 	modelresponse "github.com/namhq1989/maid-bots/internal/model/response"
@@ -15,7 +17,7 @@ type Register struct {
 	Target   string
 	Value    string
 	Platform string
-	UserID   string
+	User     modelcommand.User
 }
 
 func (c Register) Process(ctx *appcontext.AppContext) (string, error) {
@@ -51,7 +53,7 @@ func (c Register) domain(ctx *appcontext.AppContext, checkData *modelresponse.Ch
 	)
 
 	// find user first
-	user, err := userSvc.FindOrCreateWithPlatformID(ctx, c.Platform, c.UserID)
+	user, err := userSvc.FindOrCreateWithPlatformID(ctx, c.Platform, c.User)
 	if err != nil {
 		return "", err
 	}

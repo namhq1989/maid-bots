@@ -3,9 +3,10 @@ package telegram
 import (
 	"context"
 
+	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
+
 	"github.com/namhq1989/maid-bots/config"
 	"github.com/namhq1989/maid-bots/internal/command/unrecognized"
-	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 
 	"github.com/go-telegram/bot"
@@ -15,25 +16,14 @@ import (
 func unrecognizedHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 	ctx := appcontext.New(bgCtx)
 
-	// apm transaction
-	t := sentryio.NewTransaction(bgCtx, "unrecognized", getAPMTransactionData(ctx, update))
-	defer t.Finish()
-
-	// re-assign context
-	ctx.Context = t.Context()
-
 	// process
-	result := unrecognized.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram, getUserID(update))
+	payload := modelcommand.Payload{
+		Platform: config.Platform.Telegram,
+		Message:  update.Message.Text,
+		User:     getUser(update),
+	}
+	result := unrecognized.ProcessMessage(ctx, payload)
 
 	// respond
-	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{
-		ChatID:    update.Message.Chat.ID,
-		ParseMode: models.ParseModeMarkdown,
-		LinkPreviewOptions: &models.LinkPreviewOptions{
-			IsDisabled: &isLinkPreviewDisable,
-		},
-		Text: result,
-	}); err != nil {
-		ctx.Logger.Error("send unrecognized response", err, appcontext.Fields{})
-	}
+	respond(ctx, b, update, "unrecognized", result)
 }

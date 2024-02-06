@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"regexp"
 
+	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
+
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
 
 	"github.com/go-telegram/bot"
@@ -15,9 +17,7 @@ import (
 )
 
 type command struct {
-	message   string
-	platform  string
-	userID    string
+	payload   modelcommand.Payload
 	argAction string
 	argTarget string
 	argValue  string
@@ -28,12 +28,12 @@ func (c command) process(ctx *appcontext.AppContext) string {
 	defer span.Finish()
 
 	var (
-		arguments = appcommand.ExtractParameters(c.message)
+		arguments = appcommand.ExtractParameters(c.payload.Message)
 	)
 
 	ctx.Logger.Info("receive: /monitor", appcontext.Fields{
-		"message":   c.message,
-		"platform":  c.platform,
+		"platform":  c.payload.Platform,
+		"message":   c.payload.Message,
 		"arguments": arguments,
 	})
 
@@ -152,8 +152,8 @@ func (c command) register(ctx *appcontext.AppContext) string {
 	h := Register{
 		Target:   c.argTarget,
 		Value:    c.argValue,
-		Platform: c.platform,
-		UserID:   c.userID,
+		Platform: c.payload.Platform,
+		User:     c.payload.User,
 	}
 
 	// process
@@ -166,13 +166,13 @@ func (c command) register(ctx *appcontext.AppContext) string {
 }
 
 func (c command) list(_ *appcontext.AppContext) string {
-	return bot.EscapeMarkdown(fmt.Sprintf("listing monitoring domains of Telegram user id %s ...", c.userID))
+	return bot.EscapeMarkdown(fmt.Sprintf("listing monitoring domains of Telegram user id %s ...", c.payload.User.ID))
 }
 
 func (c command) remove(_ *appcontext.AppContext) string {
-	return bot.EscapeMarkdown(fmt.Sprintf("removing %s %s with user %s ...", c.argTarget, c.argValue, c.userID))
+	return bot.EscapeMarkdown(fmt.Sprintf("removing %s %s with user %s ...", c.argTarget, c.argValue, c.payload.User.ID))
 }
 
 func (c command) stats(_ *appcontext.AppContext) string {
-	return bot.EscapeMarkdown(fmt.Sprintf("getting stats of %s %s with user %s ...", c.argTarget, c.argValue, c.userID))
+	return bot.EscapeMarkdown(fmt.Sprintf("getting stats of %s %s with user %s ...", c.argTarget, c.argValue, c.payload.User.ID))
 }

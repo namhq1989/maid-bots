@@ -2,23 +2,23 @@ package example
 
 import (
 	"github.com/namhq1989/maid-bots/content"
+	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
 	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 
 type command struct {
-	message  string
-	platform string
+	payload modelcommand.Payload
 }
 
 func (c command) process(ctx *appcontext.AppContext) string {
 	var (
-		arguments = appcommand.ExtractParameters(c.message)
+		arguments = appcommand.ExtractParameters(c.payload.Message)
 	)
 
 	ctx.Logger.Info("receive: /example", appcontext.Fields{
-		"message":   c.message,
-		"platform":  c.platform,
+		"message":   c.payload.Message,
+		"platform":  c.payload.Platform,
 		"arguments": arguments,
 	})
 

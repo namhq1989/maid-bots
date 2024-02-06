@@ -3,6 +3,8 @@ package telegram
 import (
 	"context"
 
+	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
+
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"github.com/namhq1989/maid-bots/config"
@@ -23,17 +25,13 @@ func randomHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 	ctx.Context = t.Context()
 
 	// process
-	result := random.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram, getUserID(update))
+	payload := modelcommand.Payload{
+		Platform: config.Platform.Telegram,
+		Message:  update.Message.Text,
+		User:     getUser(update),
+	}
+	result := random.ProcessMessage(ctx, payload)
 
 	// respond
-	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{
-		ChatID:    update.Message.Chat.ID,
-		ParseMode: models.ParseModeMarkdown,
-		LinkPreviewOptions: &models.LinkPreviewOptions{
-			IsDisabled: &isLinkPreviewDisable,
-		},
-		Text: result,
-	}); err != nil {
-		ctx.Logger.Error("send /random response", err, appcontext.Fields{})
-	}
+	respond(ctx, b, update, appcommand.Root.Random.Name, result)
 }
