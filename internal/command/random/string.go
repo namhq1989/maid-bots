@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/go-telegram/bot"
-
 	"github.com/brianvoe/gofakeit/v6"
+	"github.com/go-telegram/bot"
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
