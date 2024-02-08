@@ -1,7 +1,12 @@
 package main
 
 import (
+	"crypto/subtle"
+	"github.com/namhq1989/maid-bots/internal/job"
+
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/namhq1989/maid-bots/content"
+	"github.com/namhq1989/maid-bots/pkg/queue"
 	"github.com/namhq1989/maid-bots/platform/telegram"
 	"github.com/namhq1989/maid-bots/platform/web/route"
 
@@ -42,15 +47,18 @@ func bootstrap(e *echo.Echo) {
 	})
 
 	// queue
-	// queue.Init(cfg.RedisURL, cfg.QueueConcurrency)
-	// e.Any("/q/*", echo.WrapHandler(queue.Dashboard(cfg.RedisURL)), middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
-	// 	if cfg.Environment != "release" {
-	// 		return true, nil
-	// 	}
-	//
-	// 	return subtle.ConstantTimeCompare([]byte(username), []byte(cfg.QueueUsername)) == 1 &&
-	// 		subtle.ConstantTimeCompare([]byte(password), []byte(cfg.QueuePassword)) == 1, nil
-	// }))
+	queue.Init(cfg.RedisURL, cfg.QueueConcurrency)
+	e.Any("/q/*", echo.WrapHandler(queue.Dashboard(cfg.RedisURL)), middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
+		if cfg.Environment != "release" {
+			return true, nil
+		}
+
+		return subtle.ConstantTimeCompare([]byte(username), []byte(cfg.QueueUsername)) == 1 &&
+			subtle.ConstantTimeCompare([]byte(password), []byte(cfg.QueuePassword)) == 1, nil
+	}))
+
+	// job
+	job.Init()
 
 	// load content
 	content.Load()

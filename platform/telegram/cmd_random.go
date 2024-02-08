@@ -3,11 +3,8 @@ package telegram
 import (
 	"context"
 
-	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
-
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
-	"github.com/namhq1989/maid-bots/config"
 	"github.com/namhq1989/maid-bots/internal/command/random"
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcommand"
@@ -25,12 +22,7 @@ func randomHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 	ctx.Context = t.Context()
 
 	// process
-	payload := modelcommand.Payload{
-		Platform: config.Platform.Telegram,
-		Message:  update.Message.Text,
-		User:     getUser(update),
-	}
-	result := random.ProcessMessage(ctx, payload)
+	result := random.ProcessMessage(ctx, getPayload(update))
 
 	// respond
 	respond(ctx, b, update, appcommand.Root.Random.Name, result)

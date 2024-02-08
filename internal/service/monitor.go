@@ -1,6 +1,7 @@
 package service
 
 import (
+	"strings"
 	"time"
 
 	"github.com/namhq1989/maid-bots/util/random"
@@ -46,7 +47,7 @@ func (Monitor) isCodeExisted(ctx *appcontext.AppContext, code string, ownerID pr
 		d         = dao.Monitor{}
 		condition = bson.D{
 			{"owner", ownerID},
-			{"code", code},
+			{"code", strings.ToLower(code)},
 		}
 	)
 
@@ -89,11 +90,33 @@ func (s Monitor) CreateDomain(ctx *appcontext.AppContext, domain, scheme string,
 		Data: mongodb.MonitorMetadata{
 			Scheme: scheme,
 		},
+		Interval:  mongodb.MonitorInterval60Seconds,
 		CreatedAt: time.Now(),
 	}
 
 	if err := d.InsertOne(ctx, doc); err != nil {
 		return nil, err
 	}
+
 	return &doc, nil
+}
+
+func (Monitor) UpdateJobID(ctx *appcontext.AppContext, monitorID primitive.ObjectID, jobID string, interval int) error {
+	span := sentryio.NewSpan(ctx.Context, "[service][monitor] update job id")
+	defer span.Finish()
+
+	var (
+		d      = dao.Monitor{}
+		filter = bson.M{
+			"_id": monitorID,
+		}
+		updateData = bson.M{
+			"$set": bson.M{
+				"job.id":       jobID,
+				"job.interval": interval,
+			},
+		}
+	)
+
+	return d.UpdateOneByCondition(ctx, filter, updateData)
 }

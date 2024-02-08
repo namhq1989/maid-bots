@@ -103,14 +103,14 @@ func (User) CreateWithGoogleData(ctx *appcontext.AppContext, googleData sso.Goog
 	return &user, nil
 }
 
-func (User) FindOrCreateWithPlatformID(ctx *appcontext.AppContext, platform string, u modelcommand.User) (*mongodb.User, error) {
+func (User) FindOrCreateWithPlatformID(ctx *appcontext.AppContext, platform, roomID string, u modelcommand.User) (*mongodb.User, error) {
 	span := sentryio.NewSpan(ctx.Context, "[service][user] find or create with platform id")
 	defer span.Finish()
 
 	var (
 		d         = dao.User{}
 		condition = bson.M{
-			fmt.Sprintf("platform.%s", platform): u.ID,
+			fmt.Sprintf("%s.userId", platform): u.ID,
 		}
 	)
 
@@ -130,7 +130,6 @@ func (User) FindOrCreateWithPlatformID(ctx *appcontext.AppContext, platform stri
 		ID:        mongodb.NewObjectID(),
 		Name:      u.Name,
 		Username:  u.Username,
-		Platform:  mongodb.UserPlatform{},
 		Google:    nil,
 		GitHub:    nil,
 		CreatedAt: time.Now(),
@@ -138,11 +137,20 @@ func (User) FindOrCreateWithPlatformID(ctx *appcontext.AppContext, platform stri
 
 	switch platform {
 	case config.Platform.Telegram:
-		user.Platform.Telegram = u.ID
+		user.Telegram = &mongodb.UserPlatform{
+			UserID: u.ID,
+			RoomID: roomID,
+		}
 	case config.Platform.Slack:
-		user.Platform.Slack = u.ID
+		user.Slack = &mongodb.UserPlatform{
+			UserID: u.ID,
+			RoomID: roomID,
+		}
 	case config.Platform.Discord:
-		user.Platform.Discord = u.ID
+		user.Discord = &mongodb.UserPlatform{
+			UserID: u.ID,
+			RoomID: roomID,
+		}
 	}
 
 	if err = d.InsertOne(ctx, *user); err != nil {

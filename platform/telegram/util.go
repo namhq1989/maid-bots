@@ -17,6 +17,15 @@ func generateRegexp(cmd string) *regexp.Regexp {
 	return regexp.MustCompile(fmt.Sprintf(`^%s`, cmd))
 }
 
+func getPayload(update *models.Update) modelcommand.Payload {
+	return modelcommand.Payload{
+		Platform: config.Platform.Telegram,
+		ChatID:   fmt.Sprintf("%d", update.Message.Chat.ID),
+		Message:  update.Message.Text,
+		User:     getUser(update),
+	}
+}
+
 func getUser(update *models.Update) modelcommand.User {
 	return modelcommand.User{
 		ID:       strconv.FormatInt(update.Message.From.ID, 10),

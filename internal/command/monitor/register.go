@@ -2,6 +2,7 @@ package monitor
 
 import (
 	"fmt"
+	"strings"
 
 	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
 
@@ -17,6 +18,7 @@ type Register struct {
 	Target   string
 	Value    string
 	Platform string
+	ChatID   string
 	User     modelcommand.User
 }
 
@@ -53,7 +55,7 @@ func (c Register) domain(ctx *appcontext.AppContext, checkData *modelresponse.Ch
 	)
 
 	// find user first
-	user, err := userSvc.FindOrCreateWithPlatformID(ctx, c.Platform, c.User)
+	user, err := userSvc.FindOrCreateWithPlatformID(ctx, c.Platform, c.ChatID, c.User)
 	if err != nil {
 		return "", err
 	}
@@ -69,7 +71,7 @@ func (c Register) domain(ctx *appcontext.AppContext, checkData *modelresponse.Ch
 		return "", err
 	}
 
-	return fmt.Sprintf("domain `%s` has been successfully registered with id `%s`", checkData.Name, doc.Code), nil
+	return fmt.Sprintf("domain `%s` has been successfully registered with id `%s`", checkData.Name, strings.ToUpper(doc.Code)), nil
 }
 
 func (c Register) http(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {

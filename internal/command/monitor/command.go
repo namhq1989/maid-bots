@@ -153,6 +153,7 @@ func (c command) register(ctx *appcontext.AppContext) string {
 		Target:   c.argTarget,
 		Value:    c.argValue,
 		Platform: c.payload.Platform,
+		ChatID:   c.payload.ChatID,
 		User:     c.payload.User,
 	}
 

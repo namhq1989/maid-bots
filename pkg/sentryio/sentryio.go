@@ -23,6 +23,9 @@ func Init(echo *echo.Echo, dsn, machine, environment string) {
 			return 1.0
 		},
 		ProfilesSampleRate: 1.0,
+		IgnoreTransactions: []string{
+			"/q/*",
+		},
 	}); err != nil {
 		panic(err)
 	}

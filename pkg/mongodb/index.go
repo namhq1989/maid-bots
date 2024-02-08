@@ -47,6 +47,9 @@ func indexMonitor() {
 		{
 			Keys: bson.D{{"owner", 1}, {"type", 1}, {"createdAt", -1}},
 		},
+		{
+			Keys: bson.D{{"interval", 1}, {"createdAt", 1}},
+		},
 	}
 	processIndex(MonitorCol(), indexes)
 }

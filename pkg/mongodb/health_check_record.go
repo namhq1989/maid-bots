@@ -14,15 +14,15 @@ const (
 )
 
 type HealthCheckRecord struct {
-	ID               primitive.ObjectID        `bson:"_id"`
-	Owner            primitive.ObjectID        `bson:"owner"`
-	Type             MonitorType               `bson:"type"`
-	Status           HealthCheckRecordStatus   `bson:"status"`
-	Code             string                    `bson:"code"`
-	Description      string                    `bson:"description"`
-	ResponseTimeInMs int                       `bson:"responseTimeInMs"`
-	CreatedAt        time.Time                 `bson:"createdAt"`
-	Data             HealthCheckRecordMetadata `bson:"data"`
+	ID               primitive.ObjectID      `bson:"_id"`
+	Owner            primitive.ObjectID      `bson:"owner"`
+	Type             MonitorType             `bson:"type"`
+	Status           HealthCheckRecordStatus `bson:"status"`
+	Code             string                  `bson:"code"`
+	Target           string                  `bson:"target"`
+	Description      string                  `bson:"description"`
+	ResponseTimeInMs int64                   `bson:"responseTimeInMs"`
+	CreatedAt        time.Time               `bson:"createdAt"`
 }
 
 type HealthCheckRecordMetadata struct {
