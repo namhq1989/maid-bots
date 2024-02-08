@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/go-telegram/bot"
-
 	"github.com/brianvoe/gofakeit/v6"
+	"github.com/go-telegram/bot"
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
@@ -75,7 +74,7 @@ func (c String) Process(ctx *appcontext.AppContext) string {
 }
 
 func (String) person(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "person", "")
+	span := sentryio.NewSpan(ctx.Context, "person")
 	defer span.Finish()
 
 	v := gofakeit.Person()
@@ -92,77 +91,77 @@ func (String) person(ctx *appcontext.AppContext) string {
 }
 
 func (String) email(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "email", "")
+	span := sentryio.NewSpan(ctx.Context, "email")
 	defer span.Finish()
 
 	return gofakeit.Email()
 }
 
 func (String) phone(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "phone", "")
+	span := sentryio.NewSpan(ctx.Context, "phone")
 	defer span.Finish()
 
 	return gofakeit.PhoneFormatted()
 }
 
 func (String) username(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "username", "")
+	span := sentryio.NewSpan(ctx.Context, "username")
 	defer span.Finish()
 
 	return strings.ToLower(gofakeit.Username())
 }
 
 func (String) address(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "address", "")
+	span := sentryio.NewSpan(ctx.Context, "address")
 	defer span.Finish()
 
 	return gofakeit.Address().Address
 }
 
 func (String) latlon(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "latlon", "")
+	span := sentryio.NewSpan(ctx.Context, "latlon")
 	defer span.Finish()
 
 	return fmt.Sprintf("%f,%f", gofakeit.Latitude(), gofakeit.Longitude())
 }
 
 func (String) sentence(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "sentence", "")
+	span := sentryio.NewSpan(ctx.Context, "sentence")
 	defer span.Finish()
 
 	return gofakeit.SentenceSimple()
 }
 
 func (String) paragraph(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "paragraph", "")
+	span := sentryio.NewSpan(ctx.Context, "paragraph")
 	defer span.Finish()
 
 	return gofakeit.Paragraph(1, gofakeit.IntRange(2, 5), gofakeit.IntRange(8, 20), "\n")
 }
 
 func (String) quote(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "quote", "")
+	span := sentryio.NewSpan(ctx.Context, "quote")
 	defer span.Finish()
 
 	return gofakeit.Quote()
 }
 
 func (String) uuid(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "uuid", "")
+	span := sentryio.NewSpan(ctx.Context, "uuid")
 	defer span.Finish()
 
 	return gofakeit.UUID()
 }
 
 func (String) hexColor(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "hexColor", "")
+	span := sentryio.NewSpan(ctx.Context, "hexColor")
 	defer span.Finish()
 
 	return gofakeit.HexColor()
 }
 
 func (String) rgbColor(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "rgbColor", "")
+	span := sentryio.NewSpan(ctx.Context, "rgbColor")
 	defer span.Finish()
 
 	v := gofakeit.RGBColor()
@@ -170,63 +169,63 @@ func (String) rgbColor(ctx *appcontext.AppContext) string {
 }
 
 func (String) url(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "url", "")
+	span := sentryio.NewSpan(ctx.Context, "url")
 	defer span.Finish()
 
 	return gofakeit.URL()
 }
 
 func (String) imageURL(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "imageURL", "")
+	span := sentryio.NewSpan(ctx.Context, "imageURL")
 	defer span.Finish()
 
 	return gofakeit.ImageURL(gofakeit.IntRange(100, 300), gofakeit.IntRange(100, 300))
 }
 
 func (String) domain(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "domain", "")
+	span := sentryio.NewSpan(ctx.Context, "domain")
 	defer span.Finish()
 
 	return gofakeit.DomainName()
 }
 
 func (String) ipv4(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "ipv4", "")
+	span := sentryio.NewSpan(ctx.Context, "ipv4")
 	defer span.Finish()
 
 	return gofakeit.IPv4Address()
 }
 
 func (String) ipv6(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "ipv6", "")
+	span := sentryio.NewSpan(ctx.Context, "ipv6")
 	defer span.Finish()
 
 	return gofakeit.IPv6Address()
 }
 
 func (String) userAgent(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "userAgent", "")
+	span := sentryio.NewSpan(ctx.Context, "userAgent")
 	defer span.Finish()
 
 	return gofakeit.UserAgent()
 }
 
 func (String) date(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "date", "")
+	span := sentryio.NewSpan(ctx.Context, "date")
 	defer span.Finish()
 
 	return gofakeit.Date().String()
 }
 
 func (String) timezone(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "timezone", "")
+	span := sentryio.NewSpan(ctx.Context, "timezone")
 	defer span.Finish()
 
 	return gofakeit.TimeZoneFull()
 }
 
 func (c String) creditCard(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "creditCard", "")
+	span := sentryio.NewSpan(ctx.Context, "creditCard")
 	defer span.Finish()
 
 	v := gofakeit.CreditCard()
@@ -256,21 +255,21 @@ func (String) formatCardNumber(cardNumber string) string {
 }
 
 func (String) walletAddress(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "walletAddress", "")
+	span := sentryio.NewSpan(ctx.Context, "walletAddress")
 	defer span.Finish()
 
 	return gofakeit.BitcoinAddress()
 }
 
 func (String) pet(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "pet", "")
+	span := sentryio.NewSpan(ctx.Context, "pet")
 	defer span.Finish()
 
 	return gofakeit.PetName()
 }
 
 func (String) emoji(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "emoji", "")
+	span := sentryio.NewSpan(ctx.Context, "emoji")
 	defer span.Finish()
 
 	return gofakeit.Emoji()

@@ -3,6 +3,8 @@ package monitor
 import (
 	"fmt"
 
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
+
 	"github.com/namhq1989/maid-bots/content"
 
 	modelresponse "github.com/namhq1989/maid-bots/internal/model/response"
@@ -32,6 +34,9 @@ func (c Check) Process(ctx *appcontext.AppContext) (*modelresponse.Check, error)
 }
 
 func (c Check) domain(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
+	span := sentryio.NewSpan(ctx.Context, "[monitor][check] domain")
+	defer span.Finish()
+
 	ctx.AddLogData(appcontext.Fields{"domain": c.Value})
 
 	var result = &modelresponse.Check{}
@@ -74,6 +79,9 @@ func (c Check) domain(ctx *appcontext.AppContext) (*modelresponse.Check, error) 
 }
 
 func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
+	span := sentryio.NewSpan(ctx.Context, "[monitor][check] http")
+	defer span.Finish()
+
 	ctx.AddLogData(appcontext.Fields{"url": c.Value})
 
 	var result = &modelresponse.Check{}
@@ -123,6 +131,9 @@ func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 }
 
 func (c Check) tcp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
+	span := sentryio.NewSpan(ctx.Context, "[monitor][check] tcp")
+	defer span.Finish()
+
 	var result = &modelresponse.Check{}
 
 	// check
@@ -149,6 +160,9 @@ func (c Check) tcp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 }
 
 func (c Check) icmp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
+	span := sentryio.NewSpan(ctx.Context, "[monitor][check] icmp")
+	defer span.Finish()
+
 	var result = &modelresponse.Check{}
 
 	// validate

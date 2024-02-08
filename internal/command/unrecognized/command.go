@@ -1,45 +1,70 @@
 package unrecognized
 
 import (
+	"fmt"
+
+	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
+
 	"github.com/namhq1989/maid-bots/internal/command/example"
 	"github.com/namhq1989/maid-bots/internal/command/help"
 	"github.com/namhq1989/maid-bots/internal/command/monitor"
 	"github.com/namhq1989/maid-bots/internal/command/random"
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 
 type command struct {
-	message  string
-	platform string
-	userID   string
+	payload modelcommand.Payload
 }
 
 func (c command) process(ctx *appcontext.AppContext) string {
 	var (
-		arguments = appcommand.ExtractParameters(c.message)
+		arguments = appcommand.ExtractParameters(c.payload.Message)
 	)
 
 	// sometimes users click on the handler from "/help" content
 	// and for some reason this library can't process the handler
 	// so this function will re-check again to make sure the message is a handler
-	cmd := appcommand.ExtractCommand(c.message)
-	if cmd != "" {
-		switch cmd {
-		case appcommand.Root.Help.WithSlash:
-			return help.ProcessMessage(ctx, c.message, c.platform)
-		case appcommand.Root.Example.WithSlash:
-			return example.ProcessMessage(ctx, c.message, c.platform)
-		case appcommand.Root.Monitor.WithSlash:
-			return monitor.ProcessMessage(ctx, c.message, c.platform, c.userID)
-		case appcommand.Root.Random.WithSlash:
-			return random.ProcessMessage(ctx, c.message, c.platform, c.userID)
-		}
+	cmd := appcommand.ExtractCommand(c.payload.Message)
+	if !appcommand.IsRootCommandValid(cmd) {
+		ctx.Logger.Info("receive: unrecognized message", appcontext.Fields{
+			"message":   c.payload.Message,
+			"platform":  c.payload.Platform,
+			"arguments": arguments,
+		})
+
+		return "invalid command"
 	}
 
-	ctx.Logger.Info("receive: unrecognized message", appcontext.Fields{
-		"message":   c.message,
-		"platform":  c.platform,
+	// apm transaction
+	t := sentryio.NewTransaction(ctx.Context, cmd, map[string]string{
+		"platform":  c.payload.Platform,
+		"message":   c.payload.Message,
+		"userId":    c.payload.User.ID,
+		"username":  c.payload.User.Username,
+		"requestId": ctx.RequestID,
+		"traceId":   ctx.TraceID,
+	})
+	defer t.Finish()
+
+	// re-assign context
+	ctx.Context = t.Context()
+
+	switch cmd {
+	case appcommand.Root.Help.WithSlash:
+		return help.ProcessMessage(ctx, c.payload)
+	case appcommand.Root.Example.WithSlash:
+		return example.ProcessMessage(ctx, c.payload)
+	case appcommand.Root.Monitor.WithSlash:
+		return monitor.ProcessMessage(ctx, c.payload)
+	case appcommand.Root.Random.WithSlash:
+		return random.ProcessMessage(ctx, c.payload)
+	}
+
+	ctx.Logger.Info(fmt.Sprintf("receive: %s message", cmd), appcontext.Fields{
+		"message":   c.payload.Message,
+		"platform":  c.payload.Platform,
 		"arguments": arguments,
 	})
 

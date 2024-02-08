@@ -1,4 +1,4 @@
-package modelmongodb
+package mongodb
 
 import (
 	"time"
@@ -9,10 +9,13 @@ import (
 type User struct {
 	ID        primitive.ObjectID             `bson:"_id"`
 	Name      string                         `bson:"name"`
+	Username  string                         `bson:"username"`
 	Avatar    string                         `bson:"avatar"`
-	Platform  UserPlatform                   `bson:"platform"`
 	Google    *UserSocialProviderInformation `bson:"google"`
 	GitHub    *UserSocialProviderInformation `bson:"github"`
+	Telegram  *UserPlatform                  `bson:"telegram"`
+	Slack     *UserPlatform                  `bson:"slack"`
+	Discord   *UserPlatform                  `bson:"discord"`
 	CreatedAt time.Time                      `bson:"createdAt"`
 }
 
@@ -24,7 +27,6 @@ type UserSocialProviderInformation struct {
 }
 
 type UserPlatform struct {
-	Telegram string `bson:"telegram"`
-	Slack    string `bson:"slack"`
-	Discord  string `bson:"discord"`
+	UserID string `bson:"userId"`
+	RoomID string `bson:"roomId"`
 }

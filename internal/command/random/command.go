@@ -2,24 +2,23 @@ package random
 
 import (
 	"github.com/namhq1989/maid-bots/content"
+	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
 	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 
 type command struct {
-	message  string
-	platform string
-	userID   string
+	payload modelcommand.Payload
 }
 
 func (c command) process(ctx *appcontext.AppContext) string {
 	var (
-		arguments = appcommand.ExtractParameters(c.message)
+		arguments = appcommand.ExtractParameters(c.payload.Message)
 	)
 
 	ctx.Logger.Info("receive: /random", appcontext.Fields{
-		"message":   c.message,
-		"platform":  c.platform,
+		"message":   c.payload.Message,
+		"platform":  c.payload.Platform,
 		"arguments": arguments,
 	})
 
@@ -49,12 +48,12 @@ func (c command) process(ctx *appcontext.AppContext) string {
 		switch arguments[0] {
 		case appcommand.RandomTargets.Number.Name:
 			h := Number{
-				Message: c.message,
+				Message: c.payload.Message,
 			}
 			text = h.Process(ctx)
 		case appcommand.RandomTargets.String.Name:
 			h := String{
-				Message: c.message,
+				Message: c.payload.Message,
 				Target:  arguments[1],
 			}
 			text = h.Process(ctx)

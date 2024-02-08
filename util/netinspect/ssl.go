@@ -18,7 +18,7 @@ type SSL struct {
 }
 
 func CheckSSL(ctx *appcontext.AppContext, host string, port int) (result *SSL, err error) {
-	span := sentryio.NewSpan(ctx.Context, "check ssl", "")
+	span := sentryio.NewSpan(ctx.Context, "[util][netinspect] check ssl")
 	defer span.Finish()
 
 	result = &SSL{}

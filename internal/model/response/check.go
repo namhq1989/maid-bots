@@ -33,7 +33,7 @@ type CheckICMP struct {
 }
 
 func (m Check) ToMarkdown(ctx *appcontext.AppContext) string {
-	span := sentryio.NewSpan(ctx.Context, "convert to markdown", "")
+	span := sentryio.NewSpan(ctx.Context, "[model][check] convert to markdown")
 	defer span.Finish()
 
 	var status = "Up ✅"

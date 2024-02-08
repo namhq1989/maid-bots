@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 
+	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
+
 	"github.com/namhq1989/maid-bots/util/appcontext"
 
 	"github.com/go-telegram/bot/models"
@@ -15,16 +17,31 @@ func generateRegexp(cmd string) *regexp.Regexp {
 	return regexp.MustCompile(fmt.Sprintf(`^%s`, cmd))
 }
 
-func getUserID(update *models.Update) string {
-	return strconv.FormatInt(update.Message.From.ID, 10)
+func getPayload(update *models.Update) modelcommand.Payload {
+	return modelcommand.Payload{
+		Platform: config.Platform.Telegram,
+		ChatID:   fmt.Sprintf("%d", update.Message.Chat.ID),
+		Message:  update.Message.Text,
+		User:     getUser(update),
+	}
+}
+
+func getUser(update *models.Update) modelcommand.User {
+	return modelcommand.User{
+		ID:       strconv.FormatInt(update.Message.From.ID, 10),
+		Name:     fmt.Sprintf("%s %s", update.Message.From.LastName, update.Message.From.FirstName),
+		Username: update.Message.From.Username,
+	}
 }
 
 func getAPMTransactionData(ctx *appcontext.AppContext, update *models.Update) map[string]string {
+	user := getUser(update)
+
 	return map[string]string{
 		"platform":  config.Platform.Telegram,
 		"message":   update.Message.Text,
-		"username":  update.Message.From.Username,
-		"userId":    getUserID(update),
+		"username":  user.Username,
+		"userId":    user.ID,
 		"requestId": ctx.RequestID,
 		"traceId":   ctx.TraceID,
 	}

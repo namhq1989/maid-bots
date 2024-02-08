@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"github.com/namhq1989/maid-bots/internal/service"
 	"github.com/namhq1989/maid-bots/pkg/sso"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 	jwt2 "github.com/namhq1989/maid-bots/util/jwt"
@@ -12,7 +13,7 @@ type SSO struct{}
 func (SSO) LoginWithGoogle(ctx *appcontext.AppContext, token string) (string, error) {
 	ctx.Logger.Text("new Google sso")
 	var (
-		userSvc = User{}
+		userSvc = service.User{}
 	)
 
 	// fetch data from google
@@ -44,7 +45,7 @@ func (SSO) LoginWithGoogle(ctx *appcontext.AppContext, token string) (string, er
 func (SSO) LoginWithGitHub(ctx *appcontext.AppContext, code string) (string, error) {
 	ctx.Logger.Text("new GitHub sso")
 	var (
-		userSvc = User{}
+		userSvc = service.User{}
 	)
 
 	// fetch data from GitHub

@@ -10,7 +10,6 @@ import (
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
-	"github.com/namhq1989/maid-bots/config"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 
@@ -25,17 +24,8 @@ func monitorHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 	ctx.Context = t.Context()
 
 	// process
-	result := monitor.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram, getUserID(update))
+	result := monitor.ProcessMessage(ctx, getPayload(update))
 
 	// respond
-	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{
-		ChatID:    update.Message.Chat.ID,
-		ParseMode: models.ParseModeMarkdown,
-		LinkPreviewOptions: &models.LinkPreviewOptions{
-			IsDisabled: &isLinkPreviewDisable,
-		},
-		Text: result,
-	}); err != nil {
-		ctx.Logger.Error("send /monitor response", err, appcontext.Fields{})
-	}
+	respond(ctx, b, update, appcommand.Root.Monitor.Name, result)
 }

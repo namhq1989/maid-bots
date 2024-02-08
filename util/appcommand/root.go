@@ -1,5 +1,7 @@
 package appcommand
 
+import "slices"
+
 var Root = struct {
 	Help    Command
 	Monitor Command
@@ -26,4 +28,15 @@ var Root = struct {
 		WithSlash:   "/example",
 		Description: "Examples",
 	},
+}
+
+var RootCommandsArray = []string{
+	Root.Help.WithSlash,
+	Root.Monitor.WithSlash,
+	Root.Random.WithSlash,
+	Root.Example.WithSlash,
+}
+
+func IsRootCommandValid(v string) bool {
+	return slices.Contains(RootCommandsArray, v)
 }

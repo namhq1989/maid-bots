@@ -7,7 +7,6 @@ import (
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
-	"github.com/namhq1989/maid-bots/config"
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
@@ -24,17 +23,8 @@ func exampleHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 	ctx.Context = t.Context()
 
 	// process
-	result := example.ProcessMessage(ctx, update.Message.Text, config.Platform.Telegram)
+	result := example.ProcessMessage(ctx, getPayload(update))
 
 	// respond
-	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{
-		ChatID:    update.Message.Chat.ID,
-		ParseMode: models.ParseModeMarkdown,
-		LinkPreviewOptions: &models.LinkPreviewOptions{
-			IsDisabled: &isLinkPreviewDisable,
-		},
-		Text: result,
-	}); err != nil {
-		ctx.Logger.Error("send /example response", err, appcontext.Fields{})
-	}
+	respond(ctx, b, update, appcommand.Root.Example.Name, result)
 }

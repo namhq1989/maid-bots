@@ -45,6 +45,10 @@ func initServer(redisConn asynq.RedisClientOpt, concurrency int) *asynq.ServeMux
 	server := asynq.NewServer(redisConn, asynq.Config{
 		Concurrency:    concurrency,
 		RetryDelayFunc: retryDelayFunc,
+		Queues: map[string]int{
+			queueCronjob: 10,
+			queueDefault: 3,
+		},
 	})
 
 	// init mux server

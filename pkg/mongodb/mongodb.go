@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -34,11 +36,23 @@ func Connect(uri, dbName string) {
 
 	db = client.Database(dbName)
 
+	// time series
+	colTimeSeries()
+
 	// index
 	go colIndexes()
 }
 
-// UserCol ...
 func UserCol() *mongo.Collection {
-	return db.Collection("users")
+	return db.Collection(collectionNames.User)
+}
+func MonitorCol() *mongo.Collection {
+	return db.Collection(collectionNames.Monitor)
+}
+func HealthCheckRecordCol() *mongo.Collection {
+	return db.Collection(collectionNames.HealthCheckRecord)
+}
+
+func NewObjectID() primitive.ObjectID {
+	return primitive.NewObjectID()
 }
