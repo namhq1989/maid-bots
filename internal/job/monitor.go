@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
+
 	"github.com/goccy/go-json"
 	"github.com/hibiken/asynq"
 	"github.com/namhq1989/maid-bots/internal/command/monitor"
@@ -26,11 +28,18 @@ type monitorCheckData struct {
 
 var monitorCheck = struct {
 	interval60Seconds monitorCheckData
+	interval30Seconds monitorCheckData
 }{
 	interval60Seconds: monitorCheckData{
 		Task:       "monitor:check:60s",
 		CronSpec:   "*/1 * * * *",
 		Interval:   60,
+		RetryTimes: 3,
+	},
+	interval30Seconds: monitorCheckData{
+		Task:       "monitor:check:30s",
+		CronSpec:   "@every 30s",
+		Interval:   30,
 		RetryTimes: 3,
 	},
 }
@@ -61,8 +70,12 @@ func (Monitor) setup(q queue.Instance, data monitorCheckData) {
 }
 
 func (j Monitor) check(bgCtx context.Context, task *asynq.Task) error {
+	// apm transaction
+	t := sentryio.NewTransaction(bgCtx, task.Type(), nil)
+	defer t.Finish()
+
 	var (
-		ctx  = appcontext.New(bgCtx)
+		ctx  = appcontext.New(t.Context())
 		data monitorCheckData
 	)
 
