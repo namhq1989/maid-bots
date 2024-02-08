@@ -46,8 +46,8 @@ func (Monitor) isCodeExisted(ctx *appcontext.AppContext, code string, ownerID pr
 	var (
 		d         = dao.Monitor{}
 		condition = bson.D{
-			{"owner", ownerID},
-			{"code", strings.ToLower(code)},
+			{Key: "owner", Value: ownerID},
+			{Key: "code", Value: strings.ToLower(code)},
 		}
 	)
 
@@ -62,9 +62,9 @@ func (Monitor) IsTargetExisted(ctx *appcontext.AppContext, monitorType mongodb.M
 	var (
 		d         = dao.Monitor{}
 		condition = bson.D{
-			{"owner", userID},
-			{"type", monitorType},
-			{"target", target},
+			{Key: "owner", Value: userID},
+			{Key: "type", Value: monitorType},
+			{Key: "target", Value: target},
 		}
 	)
 
