@@ -61,7 +61,7 @@ func (c Register) domain(ctx *appcontext.AppContext, checkData *modelresponse.Ch
 	}
 
 	// check domain is existed or not
-	if isTargetExisted := monitorSvc.IsTargetExisted(ctx, mongodb.MonitorTypeDomain, checkData.Name, user.ID); isTargetExisted {
+	if monitorSvc.IsTargetExisted(ctx, mongodb.MonitorTypeDomain, checkData.Name, user.ID) {
 		return "", fmt.Errorf("domain %s is already registered", checkData.Name)
 	}
 
@@ -74,14 +74,14 @@ func (c Register) domain(ctx *appcontext.AppContext, checkData *modelresponse.Ch
 	return fmt.Sprintf("domain `%s` has been successfully registered with id `%s`", checkData.Name, strings.ToUpper(doc.Code)), nil
 }
 
-func (c Register) http(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
+func (Register) http(_ *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
 	return "", nil
 }
 
-func (c Register) tcp(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
+func (Register) tcp(_ *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
 	return "", nil
 }
 
-func (c Register) icmp(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
+func (Register) icmp(_ *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
 	return "", nil
 }
