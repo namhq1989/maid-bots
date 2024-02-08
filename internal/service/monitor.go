@@ -101,22 +101,80 @@ func (s Monitor) CreateDomain(ctx *appcontext.AppContext, domain, scheme string,
 	return &doc, nil
 }
 
-func (Monitor) UpdateJobID(ctx *appcontext.AppContext, monitorID primitive.ObjectID, jobID string, interval int) error {
-	span := sentryio.NewSpan(ctx.Context, "[service][monitor] update job id")
+func (s Monitor) CreateHTTP(ctx *appcontext.AppContext, http string, ownerID primitive.ObjectID) (*mongodb.Monitor, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][monitor] create http")
 	defer span.Finish()
 
 	var (
-		d      = dao.Monitor{}
-		filter = bson.M{
-			"_id": monitorID,
-		}
-		updateData = bson.M{
-			"$set": bson.M{
-				"job.id":       jobID,
-				"job.interval": interval,
-			},
-		}
+		d    = dao.Monitor{}
+		code = s.randomCode(ctx, ownerID)
 	)
 
-	return d.UpdateOneByCondition(ctx, filter, updateData)
+	var doc = mongodb.Monitor{
+		ID:        mongodb.NewObjectID(),
+		Owner:     ownerID,
+		Code:      code,
+		Target:    http,
+		Type:      mongodb.MonitorTypeHTTP,
+		Interval:  mongodb.MonitorInterval30Seconds,
+		CreatedAt: time.Now(),
+	}
+
+	if err := d.InsertOne(ctx, doc); err != nil {
+		return nil, err
+	}
+
+	return &doc, nil
+}
+
+func (s Monitor) CreateTCP(ctx *appcontext.AppContext, tcp string, ownerID primitive.ObjectID) (*mongodb.Monitor, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][monitor] create tcp")
+	defer span.Finish()
+
+	var (
+		d    = dao.Monitor{}
+		code = s.randomCode(ctx, ownerID)
+	)
+
+	var doc = mongodb.Monitor{
+		ID:        mongodb.NewObjectID(),
+		Owner:     ownerID,
+		Code:      code,
+		Target:    tcp,
+		Type:      mongodb.MonitorTypeTCP,
+		Interval:  mongodb.MonitorInterval60Seconds,
+		CreatedAt: time.Now(),
+	}
+
+	if err := d.InsertOne(ctx, doc); err != nil {
+		return nil, err
+	}
+
+	return &doc, nil
+}
+
+func (s Monitor) CreateICMP(ctx *appcontext.AppContext, icmp string, ownerID primitive.ObjectID) (*mongodb.Monitor, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][monitor] create icmp")
+	defer span.Finish()
+
+	var (
+		d    = dao.Monitor{}
+		code = s.randomCode(ctx, ownerID)
+	)
+
+	var doc = mongodb.Monitor{
+		ID:        mongodb.NewObjectID(),
+		Owner:     ownerID,
+		Code:      code,
+		Target:    icmp,
+		Type:      mongodb.MonitorTypeICMP,
+		Interval:  mongodb.MonitorInterval60Seconds,
+		CreatedAt: time.Now(),
+	}
+
+	if err := d.InsertOne(ctx, doc); err != nil {
+		return nil, err
+	}
+
+	return &doc, nil
 }

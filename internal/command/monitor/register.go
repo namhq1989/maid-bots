@@ -60,9 +60,9 @@ func (c Register) domain(ctx *appcontext.AppContext, checkData *modelresponse.Ch
 		return "", err
 	}
 
-	// check domain is existed or not
+	// check target is existed or not
 	if monitorSvc.IsTargetExisted(ctx, mongodb.MonitorTypeDomain, checkData.Name, user.ID) {
-		return "", fmt.Errorf("domain %s is already registered", checkData.Name)
+		return "", fmt.Errorf("target %s is already registered", checkData.Name)
 	}
 
 	// create monitor
@@ -71,17 +71,83 @@ func (c Register) domain(ctx *appcontext.AppContext, checkData *modelresponse.Ch
 		return "", err
 	}
 
-	return fmt.Sprintf("domain `%s` has been successfully registered with id `%s`", checkData.Name, strings.ToUpper(doc.Code)), nil
+	return fmt.Sprintf("target `%s` has been successfully registered with id `%s`", checkData.Name, strings.ToUpper(doc.Code)), nil
 }
 
-func (Register) http(_ *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
-	return "", nil
+func (c Register) http(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
+	var (
+		userSvc    = service.User{}
+		monitorSvc = service.Monitor{}
+	)
+
+	// find user first
+	user, err := userSvc.FindOrCreateWithPlatformID(ctx, c.Platform, c.ChatID, c.User)
+	if err != nil {
+		return "", err
+	}
+
+	// check target is existed or not
+	if monitorSvc.IsTargetExisted(ctx, mongodb.MonitorTypeHTTP, checkData.Name, user.ID) {
+		return "", fmt.Errorf("target %s is already registered", checkData.Name)
+	}
+
+	// create monitor
+	doc, err := monitorSvc.CreateHTTP(ctx, checkData.Name, user.ID)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("target `%s` has been successfully registered with id `%s`", checkData.Name, strings.ToUpper(doc.Code)), nil
 }
 
-func (Register) tcp(_ *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
-	return "", nil
+func (c Register) tcp(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
+	var (
+		userSvc    = service.User{}
+		monitorSvc = service.Monitor{}
+	)
+
+	// find user first
+	user, err := userSvc.FindOrCreateWithPlatformID(ctx, c.Platform, c.ChatID, c.User)
+	if err != nil {
+		return "", err
+	}
+
+	// check target is existed or not
+	if monitorSvc.IsTargetExisted(ctx, mongodb.MonitorTypeTCP, checkData.Name, user.ID) {
+		return "", fmt.Errorf("target %s is already registered", checkData.Name)
+	}
+
+	// create monitor
+	doc, err := monitorSvc.CreateTCP(ctx, checkData.Name, user.ID)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("target `%s` has been successfully registered with id `%s`", checkData.Name, strings.ToUpper(doc.Code)), nil
 }
 
-func (Register) icmp(_ *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
-	return "", nil
+func (c Register) icmp(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
+	var (
+		userSvc    = service.User{}
+		monitorSvc = service.Monitor{}
+	)
+
+	// find user first
+	user, err := userSvc.FindOrCreateWithPlatformID(ctx, c.Platform, c.ChatID, c.User)
+	if err != nil {
+		return "", err
+	}
+
+	// check target is existed or not
+	if monitorSvc.IsTargetExisted(ctx, mongodb.MonitorTypeICMP, checkData.Name, user.ID) {
+		return "", fmt.Errorf("target %s is already registered", checkData.Name)
+	}
+
+	// create monitor
+	doc, err := monitorSvc.CreateICMP(ctx, checkData.Name, user.ID)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("target `%s` has been successfully registered with id `%s`", checkData.Name, strings.ToUpper(doc.Code)), nil
 }

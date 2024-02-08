@@ -1,7 +1,9 @@
 package netinspect
 
 import (
+	"errors"
 	"net"
+	"time"
 
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcontext"
@@ -39,6 +41,7 @@ func CheckICMP(ctx *appcontext.AppContext, address string) (*ICMP, error) {
 	if err != nil {
 		return nil, err
 	}
+	pinger.Timeout = 10 * time.Second
 	pinger.Count = 3
 	err = pinger.Run()
 	if err != nil {
@@ -46,6 +49,9 @@ func CheckICMP(ctx *appcontext.AppContext, address string) (*ICMP, error) {
 	}
 
 	stats := pinger.Statistics()
+	if stats.PacketLoss == 100 {
+		return nil, errors.New("target unreachable")
+	}
 	return &ICMP{
 		PackageTransmitted: stats.PacketsSent,
 		PackageReceived:    stats.PacketsRecv,
