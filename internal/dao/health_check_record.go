@@ -22,3 +22,19 @@ func (HealthCheckRecord) InsertOne(ctx *appcontext.AppContext, doc mongodb.Healt
 	}
 	return err
 }
+
+func (HealthCheckRecord) CountByCondition(ctx *appcontext.AppContext, condition interface{}) (int64, error) {
+	span := sentryio.NewSpan(ctx.Context, "[dao][health check record] count by condition")
+	defer span.Finish()
+
+	var (
+		col = mongodb.HealthCheckRecordCol()
+	)
+
+	count, err := col.CountDocuments(ctx.Context, condition)
+	if err != nil {
+		ctx.Logger.Error("HealthCheckRecord count by condition", err, appcontext.Fields{"condition": condition})
+	}
+
+	return count, err
+}

@@ -5,6 +5,9 @@ import (
 	"regexp"
 	"strconv"
 
+	"github.com/go-telegram/bot"
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
+
 	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
 
 	"github.com/namhq1989/maid-bots/util/appcontext"
@@ -12,6 +15,23 @@ import (
 	"github.com/go-telegram/bot/models"
 	"github.com/namhq1989/maid-bots/config"
 )
+
+func respond(ctx *appcontext.AppContext, b *bot.Bot, update *models.Update, command, result string) {
+	span := sentryio.NewSpan(ctx.Context, "[platform][telegram] respond")
+	defer span.Finish()
+
+	// respond
+	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{
+		ChatID:    update.Message.Chat.ID,
+		ParseMode: models.ParseModeMarkdown,
+		LinkPreviewOptions: &models.LinkPreviewOptions{
+			IsDisabled: &isLinkPreviewDisable,
+		},
+		Text: result,
+	}); err != nil {
+		ctx.Logger.Error(fmt.Sprintf("send /%s response", command), err, appcontext.Fields{})
+	}
+}
 
 func generateRegexp(cmd string) *regexp.Regexp {
 	return regexp.MustCompile(fmt.Sprintf(`^%s`, cmd))

@@ -7,12 +7,13 @@ import (
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
-	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcommand"
-	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 
-var isLinkPreviewDisable = true
+var (
+	telegramBot          *bot.Bot
+	isLinkPreviewDisable = true
+)
 
 func Init(enabled bool, token string) {
 	if !enabled {
@@ -51,26 +52,12 @@ func Init(enabled bool, token string) {
 	// unrecognized
 	b.RegisterHandler(bot.HandlerTypeMessageText, "", bot.MatchTypePrefix, unrecognizedHandler)
 
+	// assign
+	telegramBot = b
+
 	go b.Start(context.Background())
 
 	fmt.Printf("⚡️ [telegram]: initialized \n")
-}
-
-func respond(ctx *appcontext.AppContext, b *bot.Bot, update *models.Update, command, result string) {
-	span := sentryio.NewSpan(ctx.Context, "[platform][telegram] respond")
-	defer span.Finish()
-
-	// respond
-	if _, err := b.SendMessage(ctx.Context, &bot.SendMessageParams{
-		ChatID:    update.Message.Chat.ID,
-		ParseMode: models.ParseModeMarkdown,
-		LinkPreviewOptions: &models.LinkPreviewOptions{
-			IsDisabled: &isLinkPreviewDisable,
-		},
-		Text: result,
-	}); err != nil {
-		ctx.Logger.Error(fmt.Sprintf("send /%s response", command), err, appcontext.Fields{})
-	}
 }
 
 var commands = []models.BotCommand{
