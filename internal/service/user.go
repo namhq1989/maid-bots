@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
 
 	"github.com/namhq1989/maid-bots/config"
@@ -19,6 +21,20 @@ import (
 )
 
 type User struct{}
+
+func (User) FindByID(ctx *appcontext.AppContext, id primitive.ObjectID) (*mongodb.User, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][user] find by id")
+	defer span.Finish()
+
+	var (
+		d         = dao.User{}
+		condition = bson.M{
+			"_id": id,
+		}
+	)
+
+	return d.FindOneByCondition(ctx, condition)
+}
 
 func (User) FindByGitHubID(ctx *appcontext.AppContext, githubID string) (*mongodb.User, error) {
 	span := sentryio.NewSpan(ctx.Context, "[service][user] find by GitHub id")
