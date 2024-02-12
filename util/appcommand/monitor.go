@@ -32,11 +32,16 @@ var MonitorActions = struct {
 }
 
 var MonitorTargets = struct {
+	All    ArgumentTarget
 	Domain ArgumentTarget
 	HTTP   ArgumentTarget
 	ICMP   ArgumentTarget
 	TCP    ArgumentTarget
 }{
+	All: ArgumentTarget{
+		Name:        "all",
+		Description: "All targets, for `list` command only",
+	},
 	Domain: ArgumentTarget{
 		Name:        "domain",
 		Description: "Domain name",

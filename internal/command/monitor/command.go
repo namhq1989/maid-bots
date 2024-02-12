@@ -166,8 +166,20 @@ func (c command) register(ctx *appcontext.AppContext) string {
 	return result
 }
 
-func (c command) list(_ *appcontext.AppContext) string {
-	return bot.EscapeMarkdown(fmt.Sprintf("listing monitoring domains of Telegram user id %s ...", c.payload.User.ID))
+func (c command) list(ctx *appcontext.AppContext) string {
+	h := List{
+		Message: c.payload.Message,
+		Target:  c.argTarget,
+		User:    c.payload.User,
+	}
+
+	// process
+	result, err := h.Process(ctx)
+	if err != nil {
+		return bot.EscapeMarkdown(err.Error())
+	}
+
+	return bot.EscapeMarkdown(result)
 }
 
 func (c command) remove(_ *appcontext.AppContext) string {

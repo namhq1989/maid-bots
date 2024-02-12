@@ -11,10 +11,10 @@
 
 ---
 
-- [ ] Uptime: Domain, HTTP, TCP, ICMP
+- [ ] Monitor: Domain, HTTP, TCP, ICMP
   - [x] Check `domain`, `http`, `tcp`, `icmp`
   - [x] Watch `domain`, `http`, `tcp`, `icmp`
-  - [ ] List
+  - [ ] List // doing
   - [ ] Remove
   - [ ] Stats
   - [ ] Alert
