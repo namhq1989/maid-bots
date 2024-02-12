@@ -63,9 +63,11 @@ func (c Check) domain(ctx *appcontext.AppContext) (*modelresponse.Check, error) 
 
 	// response time
 	measure, err := netinspect.MeasureHTTPResponseTime(ctx, fmt.Sprintf("%s://%s", domainData.Scheme, domainData.Name))
-	if err == nil {
-		result.IsUp = true
+	if err != nil {
+		ctx.Logger.Error("error measuring http", err, appcontext.Fields{})
+		return nil, err
 	}
+	result.IsUp = measure.IsUp
 	result.ResponseTimeInMS = measure.ResponseTimeInMs
 
 	// ip
@@ -108,9 +110,11 @@ func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 
 	// response time
 	measure, err := netinspect.MeasureHTTPResponseTime(ctx, urlData.Value)
-	if err == nil {
-		result.IsUp = true
+	if err != nil {
+		ctx.Logger.Error("error measuring http", err, appcontext.Fields{})
+		return nil, err
 	}
+	result.IsUp = measure.IsUp
 	result.ResponseTimeInMS = measure.ResponseTimeInMs
 
 	// ip look up
@@ -153,7 +157,7 @@ func (c Check) tcp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	// set data
 	result.Template = content.MonitorTemplateTCP
 	result.ResponseTimeInMS = measure.ResponseTimeInMs
-	result.IsUp = true
+	result.IsUp = measure.IsUp
 	result.Name = c.Value
 
 	return result, nil

@@ -13,11 +13,12 @@
 
 - [ ] Uptime: Domain, HTTP, TCP, ICMP
   - [x] Check `domain`, `http`, `tcp`, `icmp`
-  - [ ] Watch domain, http, tcp, icmp
+  - [x] Watch `domain`, `http`, `tcp`, `icmp`
   - [ ] List
   - [ ] Remove
   - [ ] Stats
+  - [ ] Alert
 - [ ] Random
   - [x] Number
-  - [ ] String // doing
+  - [x] String
   - [ ] ...

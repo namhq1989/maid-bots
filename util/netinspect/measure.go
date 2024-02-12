@@ -12,6 +12,7 @@ import (
 )
 
 type Measure struct {
+	IsUp             bool
 	ResponseTimeInMs int64
 }
 
@@ -27,7 +28,12 @@ func MeasureHTTPResponseTime(ctx *appcontext.AppContext, url string) (*Measure, 
 	}
 	defer func() { _ = r.Body.Close() }()
 
+	if r.StatusCode > 300 {
+		return nil, fmt.Errorf("invalid status code: %d", r.StatusCode)
+	}
+
 	return &Measure{
+		IsUp:             true,
 		ResponseTimeInMs: time.Since(startTime).Milliseconds(),
 	}, nil
 }
@@ -45,6 +51,7 @@ func MeasureTCPResponseTime(ctx *appcontext.AppContext, address string) (*Measur
 	defer func() { _ = conn.Close() }()
 
 	return &Measure{
+		IsUp:             true,
 		ResponseTimeInMs: time.Since(startTime).Milliseconds(),
 	}, nil
 }

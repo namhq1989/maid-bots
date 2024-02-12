@@ -1,17 +1,12 @@
 package service
 
 import (
-	"time"
-
 	"github.com/namhq1989/maid-bots/internal/dao"
 	"github.com/namhq1989/maid-bots/pkg/mongodb"
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 	"go.mongodb.org/mongo-driver/bson"
-)
-
-const (
-	last5Minutes = time.Minute * 5
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type HealthCheckRecord struct{}
@@ -27,21 +22,20 @@ func (HealthCheckRecord) NewRecord(ctx *appcontext.AppContext, doc mongodb.Healt
 	return d.InsertOne(ctx, doc)
 }
 
-func (HealthCheckRecord) IsTargetDownRecently(ctx *appcontext.AppContext, targetCode string) (bool, error) {
-	span := sentryio.NewSpan(ctx.Context, "[service][health check record] is target down recently")
+func (HealthCheckRecord) GetRecentRecordOfTarget(ctx *appcontext.AppContext, targetCode string) (*mongodb.HealthCheckRecord, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][health check record] get recent record of target")
 	defer span.Finish()
 
 	var (
 		d    = dao.HealthCheckRecord{}
 		cond = bson.M{
-			"code":   targetCode,
-			"status": mongodb.HealthCheckRecordStatusDown,
-			"createdAt": bson.M{
-				"$gte": time.Now().Add(-last5Minutes),
-			},
+			"code": targetCode,
 		}
 	)
 
-	total, err := d.CountByCondition(ctx, cond)
-	return total > 0, err
+	return d.FindOneByCondition(ctx, cond, &options.FindOneOptions{
+		Sort: bson.M{
+			"createdAt": -1,
+		},
+	})
 }

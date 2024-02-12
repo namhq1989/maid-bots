@@ -163,13 +163,18 @@ func (Monitor) process(ctx *appcontext.AppContext, intervalSeconds int) (total i
 				failure++
 				doc.Status = mongodb.HealthCheckRecordStatusDown
 				doc.Description = err.Error()
-
-				// send message
-				sendMessage(ctx, record.Owner, record.Code, fmt.Sprintf("%s %s is down: %s", string(record.Type), record.Target, err.Error()))
 			} else {
-				doc.Status = mongodb.HealthCheckRecordStatusUp
-				doc.ResponseTimeInMs = result.ResponseTimeInMS
+				if result.IsUp {
+					doc.Status = mongodb.HealthCheckRecordStatusUp
+					doc.ResponseTimeInMs = result.ResponseTimeInMS
+				} else {
+					doc.Status = mongodb.HealthCheckRecordStatusDown
+					doc.ResponseTimeInMs = 0
+				}
 			}
+
+			// send message
+			sendMessage(ctx, doc)
 
 			// save history
 			_ = hcrService.NewRecord(ctx, doc)
