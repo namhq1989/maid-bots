@@ -12,6 +12,7 @@ import (
 )
 
 type Measure struct {
+	IsUp             bool
 	ResponseTimeInMs int64
 }
 
@@ -28,6 +29,7 @@ func MeasureHTTPResponseTime(ctx *appcontext.AppContext, url string) (*Measure, 
 	defer func() { _ = r.Body.Close() }()
 
 	return &Measure{
+		IsUp:             r.StatusCode < 300,
 		ResponseTimeInMs: time.Since(startTime).Milliseconds(),
 	}, nil
 }

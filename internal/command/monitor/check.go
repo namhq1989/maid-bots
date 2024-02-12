@@ -108,9 +108,10 @@ func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 
 	// response time
 	measure, err := netinspect.MeasureHTTPResponseTime(ctx, urlData.Value)
-	if err == nil {
-		result.IsUp = true
+	if err != nil {
+		ctx.Logger.Error("error measuring http", err, appcontext.Fields{})
 	}
+	result.IsUp = measure.IsUp
 	result.ResponseTimeInMS = measure.ResponseTimeInMs
 
 	// ip look up
