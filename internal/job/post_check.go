@@ -11,17 +11,16 @@ import (
 )
 
 const (
-	// last15Minutes = time.Minute * 15
-	last15Minutes = time.Second * 30
+	last15Minutes = time.Minute * 15
 
-	successMessage = "[resolved]  🔥🔥🔥  %s %s is up  🔥🔥🔥  "
-	failedMessage  = "[incident]  🔥🔥🔥  %s %s is down: %s  🔥🔥🔥  "
+	successMessage = "[resolved]  🔥🔥🔥  %s %s is UP  🔥🔥🔥  "
+	failedMessage  = "[incident]  🔥🔥🔥  %s %s is DOWN - %s  🔥🔥🔥  "
 )
 
 func sendMessage(ctx *appcontext.AppContext, doc mongodb.HealthCheckRecord) {
 	var (
 		hcrSvc  = service.HealthCheckRecord{}
-		message = ""
+		message string
 	)
 
 	// get latest record
