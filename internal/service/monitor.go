@@ -4,6 +4,8 @@ import (
 	"strings"
 	"time"
 
+	"go.mongodb.org/mongo-driver/mongo/options"
+
 	"github.com/namhq1989/maid-bots/util/random"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -177,4 +179,38 @@ func (s Monitor) CreateICMP(ctx *appcontext.AppContext, icmp string, ownerID pri
 	}
 
 	return &doc, nil
+}
+
+type MonitorFindByUserIDFilter struct {
+	Type    string
+	Keyword string
+	Page    int64
+}
+
+func (Monitor) FindByUserID(ctx *appcontext.AppContext, userID primitive.ObjectID, filter MonitorFindByUserIDFilter) ([]mongodb.Monitor, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][monitor] get by user id")
+	defer span.Finish()
+
+	var (
+		d               = dao.Monitor{}
+		limit     int64 = 10
+		skip            = limit * filter.Page
+		condition       = bson.D{
+			{Key: "owner", Value: userID},
+		}
+	)
+
+	// set filter
+	if filter.Type != "" {
+		condition = append(condition, bson.E{Key: "type", Value: filter.Type})
+	}
+
+	// find options
+	opts := &options.FindOptions{
+		Limit: &limit,
+		Skip:  &skip,
+		Sort:  bson.M{"createdAt": -1},
+	}
+
+	return d.FindByCondition(ctx, condition, opts)
 }

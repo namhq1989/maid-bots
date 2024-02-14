@@ -32,11 +32,16 @@ var MonitorActions = struct {
 }
 
 var MonitorTargets = struct {
+	All    ArgumentTarget
 	Domain ArgumentTarget
 	HTTP   ArgumentTarget
 	ICMP   ArgumentTarget
 	TCP    ArgumentTarget
 }{
+	All: ArgumentTarget{
+		Name:        "all",
+		Description: "All targets, for `list` command only",
+	},
 	Domain: ArgumentTarget{
 		Name:        "domain",
 		Description: "Domain name",
@@ -53,6 +58,16 @@ var MonitorTargets = struct {
 		Name:        "tcp",
 		Description: "Domain/IP with port",
 	},
+}
+
+var MonitorListParameters = struct {
+	Type    string
+	Keyword string
+	Page    string
+}{
+	Type:    "type",
+	Keyword: "keyword",
+	Page:    "page",
 }
 
 var MonitorActionsArray = []string{
