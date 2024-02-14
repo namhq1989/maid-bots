@@ -2,36 +2,142 @@ package monitor
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
+	"strings"
 
 	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
+	"github.com/namhq1989/maid-bots/internal/service"
+	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 
 type List struct {
 	Message    string
-	Target     string
+	Platform   string
+	ChatID     string
 	Parameters *ListParameters
 	User       modelcommand.User
 }
 
 type ListParameters struct {
-	Keyword   string
-	PageToken string
+	Type    string
+	Keyword string
+	Page    int64
 }
 
-func (c List) Process(ctx *appcontext.AppContext) (string, error) {
-	// check target
-	if !appcommand.IsMonitorTargetValid(c.Target) && c.Target != appcommand.MonitorTargets.All.Name {
-		return "", errors.New("invalid target, please check `/help monitor` for more information")
+func (c *List) splitMessageAndCollectParameters(ctx *appcontext.AppContext) ([]string, error) {
+	span := sentryio.NewSpan(ctx.Context, "split message and collect parameters")
+	defer span.Finish()
+
+	parts := strings.Fields(c.Message)
+	if len(parts) < 2 {
+		return nil, errors.New("invalid command parameters")
+	}
+	return parts[2:], nil
+}
+
+func (c *List) mapParametersToStruct(ctx *appcontext.AppContext, list []string) error {
+	span := sentryio.NewSpan(ctx.Context, "map parameters to struct")
+	defer span.Finish()
+
+	var (
+		parameters         = ListParameters{}
+		totalMatchedParams = 0
+	)
+
+	for _, opt := range list {
+		// split
+		parts := strings.Split(opt, "=")
+
+		// if the option doesn't have 2 parts, it's invalid and just skip
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := parts[0]
+		value := parts[1]
+
+		switch key {
+		case appcommand.MonitorListParameters.Type:
+			if !appcommand.IsMonitorTargetValid(value) {
+				continue
+			}
+			parameters.Type = value
+			totalMatchedParams++
+		case appcommand.MonitorListParameters.Keyword:
+			parameters.Keyword = value
+			totalMatchedParams++
+		case appcommand.MonitorListParameters.Page:
+			v, err := strconv.Atoi(value)
+			if err != nil {
+				continue
+			}
+			parameters.Page = int64(v)
+			totalMatchedParams++
+		default:
+			continue
+		}
 	}
 
-	// TODO:
-	// reference to /random number command
-	// "list" command supports:
-	// - query with target (domain, http, ...)
-	// - filter with keyword. it means it needs an additional field for search in database
-	// - pagination with page token. the result will return the token for next page
+	c.Parameters = &parameters
+	return nil
+}
 
-	return "listing ...", nil
+func (c *List) find(ctx *appcontext.AppContext) (string, error) {
+	var (
+		userSvc    = service.User{}
+		monitorSvc = service.Monitor{}
+	)
+
+	ctx.Logger.Print("data", c.Parameters)
+
+	// find user by platform id
+	user, err := userSvc.FindOrCreateWithPlatformID(ctx, c.Platform, c.ChatID, c.User)
+	if err != nil {
+		return "", err
+	}
+
+	// find
+	monitors, err := monitorSvc.FindByUserID(ctx, user.ID, service.MonitorFindByUserIDFilter{
+		Type:    c.Parameters.Type,
+		Keyword: c.Parameters.Keyword,
+		Page:    c.Parameters.Page,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	if len(monitors) == 0 {
+		return "You don't have any monitor yet", nil
+	}
+
+	// setup content
+	var content string
+	content += "```\n"
+	content += fmt.Sprintf(" %-5s | %-8s | %-50s \n", "Id", "Type", "Target")
+	content += "-------|----------|-----------------\n"
+	for _, monitor := range monitors {
+		content += fmt.Sprintf(" %-5s | %-8s | %-50s \n", monitor.Code, monitor.Type, monitor.Target)
+	}
+	content += "```\n"
+
+	return content, nil
+}
+
+func (c *List) Process(ctx *appcontext.AppContext) (string, error) {
+	// collect parameters
+	parameterList, err := c.splitMessageAndCollectParameters(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	// map to struct
+	if err = c.mapParametersToStruct(ctx, parameterList); err != nil {
+		return "", err
+	}
+
+	// find and return
+	return c.find(ctx)
 }

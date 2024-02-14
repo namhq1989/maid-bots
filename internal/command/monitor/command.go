@@ -168,9 +168,10 @@ func (c command) register(ctx *appcontext.AppContext) string {
 
 func (c command) list(ctx *appcontext.AppContext) string {
 	h := List{
-		Message: c.payload.Message,
-		Target:  c.argTarget,
-		User:    c.payload.User,
+		Message:  c.payload.Message,
+		Platform: c.payload.Platform,
+		ChatID:   c.payload.ChatID,
+		User:     c.payload.User,
 	}
 
 	// process
@@ -179,7 +180,7 @@ func (c command) list(ctx *appcontext.AppContext) string {
 		return bot.EscapeMarkdown(err.Error())
 	}
 
-	return bot.EscapeMarkdown(result)
+	return result
 }
 
 func (c command) remove(_ *appcontext.AppContext) string {

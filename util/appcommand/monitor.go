@@ -60,6 +60,16 @@ var MonitorTargets = struct {
 	},
 }
 
+var MonitorListParameters = struct {
+	Type    string
+	Keyword string
+	Page    string
+}{
+	Type:    "type",
+	Keyword: "keyword",
+	Page:    "page",
+}
+
 var MonitorActionsArray = []string{
 	MonitorActions.Check.Name,
 	MonitorActions.Register.Name,
