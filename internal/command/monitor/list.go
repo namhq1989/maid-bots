@@ -1,10 +1,8 @@
 package monitor
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
-	"strings"
 
 	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
 	"github.com/namhq1989/maid-bots/internal/service"
@@ -14,7 +12,7 @@ import (
 )
 
 type List struct {
-	Message    string
+	Arguments  map[string]string
 	Platform   string
 	ChatID     string
 	Parameters *ListParameters
@@ -27,18 +25,7 @@ type ListParameters struct {
 	Page    int64
 }
 
-func (c *List) splitMessageAndCollectParameters(ctx *appcontext.AppContext) ([]string, error) {
-	span := sentryio.NewSpan(ctx.Context, "split message and collect parameters")
-	defer span.Finish()
-
-	parts := strings.Fields(c.Message)
-	if len(parts) < 2 {
-		return nil, errors.New("invalid command parameters")
-	}
-	return parts[2:], nil
-}
-
-func (c *List) mapParametersToStruct(ctx *appcontext.AppContext, list []string) error {
+func (c *List) mapParametersToStruct(ctx *appcontext.AppContext) error {
 	span := sentryio.NewSpan(ctx.Context, "map parameters to struct")
 	defer span.Finish()
 
@@ -47,29 +34,15 @@ func (c *List) mapParametersToStruct(ctx *appcontext.AppContext, list []string) 
 		totalMatchedParams = 0
 	)
 
-	for _, opt := range list {
-		// split
-		parts := strings.Split(opt, "=")
-
-		// if the option doesn't have 2 parts, it's invalid and just skip
-		if len(parts) != 2 {
-			continue
-		}
-
-		key := parts[0]
-		value := parts[1]
-
+	for key, value := range c.Arguments {
 		switch key {
-		case appcommand.MonitorListParameters.Type:
-			if !appcommand.IsMonitorTargetValid(value) {
-				continue
-			}
+		case appcommand.MonitorParameters.Type:
 			parameters.Type = value
 			totalMatchedParams++
-		case appcommand.MonitorListParameters.Keyword:
+		case appcommand.MonitorParameters.Keyword:
 			parameters.Keyword = value
 			totalMatchedParams++
-		case appcommand.MonitorListParameters.Page:
+		case appcommand.MonitorParameters.Page:
 			v, err := strconv.Atoi(value)
 			if err != nil {
 				continue
@@ -91,8 +64,6 @@ func (c *List) find(ctx *appcontext.AppContext) (string, error) {
 		monitorSvc = service.Monitor{}
 	)
 
-	ctx.Logger.Print("data", c.Parameters)
-
 	// find user by platform id
 	user, err := userSvc.FindOrCreateWithPlatformID(ctx, c.Platform, c.ChatID, c.User)
 	if err != nil {
@@ -110,7 +81,7 @@ func (c *List) find(ctx *appcontext.AppContext) (string, error) {
 	}
 
 	if len(monitors) == 0 {
-		return "You don't have any monitor yet", nil
+		return "No monitors found", nil
 	}
 
 	// setup content
@@ -127,14 +98,8 @@ func (c *List) find(ctx *appcontext.AppContext) (string, error) {
 }
 
 func (c *List) Process(ctx *appcontext.AppContext) (string, error) {
-	// collect parameters
-	parameterList, err := c.splitMessageAndCollectParameters(ctx)
-	if err != nil {
-		return "", err
-	}
-
 	// map to struct
-	if err = c.mapParametersToStruct(ctx, parameterList); err != nil {
+	if err := c.mapParametersToStruct(ctx); err != nil {
 		return "", err
 	}
 

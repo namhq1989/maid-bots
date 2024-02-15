@@ -28,20 +28,19 @@ func (c command) process(ctx *appcontext.AppContext) string {
 	)
 
 	if l == 0 {
-		// just skip it and respond the content of `/help random` command
 		return content.Command.Help.Random
-	} else {
-		if arguments[appcommand.RandomNumberParameters.Type] == appcommand.RandomTypes.Number.Name {
-			h := Number{
-				Arguments: arguments,
-			}
-			text = h.Process(ctx)
-		} else if arguments[appcommand.RandomNumberParameters.Type] == appcommand.RandomTypes.String.Name {
-			h := String{
-				Arguments: arguments,
-			}
-			text = h.Process(ctx)
+	}
+
+	if arguments[appcommand.RandomNumberParameters.Type] == appcommand.RandomTypes.Number {
+		h := Number{
+			Arguments: arguments,
 		}
+		text = h.Process(ctx)
+	} else if arguments[appcommand.RandomNumberParameters.Type] == appcommand.RandomTypes.String {
+		h := String{
+			Arguments: arguments,
+		}
+		text = h.Process(ctx)
 	}
 
 	return text

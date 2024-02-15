@@ -1,17 +1,11 @@
 package appcommand
 
 var RandomTypes = struct {
-	Number ArgumentType
-	String ArgumentType
+	Number string
+	String string
 }{
-	Number: ArgumentType{
-		Name:        "number",
-		Description: "Random a number",
-	},
-	String: ArgumentType{
-		Name:        "string",
-		Description: "Random a string",
-	},
+	Number: "number",
+	String: "string",
 }
 
 var RandomNumberParameters = struct {

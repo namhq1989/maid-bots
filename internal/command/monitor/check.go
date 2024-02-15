@@ -14,35 +14,42 @@ import (
 )
 
 type Check struct {
-	Target string
-	Value  string
+	Arguments map[string]string
 }
 
 func (c Check) Process(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
-	switch c.Target {
-	case appcommand.MonitorTargets.Domain.Name:
+	var (
+		t = c.Arguments[appcommand.MonitorParameters.Type]
+	)
+
+	switch t {
+	case appcommand.MonitorTypes.Domain:
 		return c.domain(ctx)
-	case appcommand.MonitorTargets.HTTP.Name:
+	case appcommand.MonitorTypes.HTTP:
 		return c.http(ctx)
-	case appcommand.MonitorTargets.TCP.Name:
+	case appcommand.MonitorTypes.TCP:
 		return c.tcp(ctx)
-	case appcommand.MonitorTargets.ICMP.Name:
+	case appcommand.MonitorTypes.ICMP:
 		return c.icmp(ctx)
 	}
 
-	return nil, fmt.Errorf("target %s is not supported", c.Target)
+	return nil, fmt.Errorf("type \"%s\" is not supported", t)
 }
 
 func (c Check) domain(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	span := sentryio.NewSpan(ctx.Context, "[monitor][check] domain")
 	defer span.Finish()
 
-	ctx.AddLogData(appcontext.Fields{"domain": c.Value})
+	var (
+		target = c.Arguments[appcommand.MonitorParameters.Target]
+	)
+
+	ctx.AddLogData(appcontext.Fields{"domain": target})
 
 	var result = &modelresponse.Check{}
 
 	// get domain data
-	domainData, err := netinspect.ParseDomain(ctx, c.Value)
+	domainData, err := netinspect.ParseDomain(ctx, target)
 	if err != nil {
 		ctx.Logger.Error("error parsing domain data", err, appcontext.Fields{})
 		return nil, err
@@ -84,12 +91,16 @@ func (c Check) http(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	span := sentryio.NewSpan(ctx.Context, "[monitor][check] http")
 	defer span.Finish()
 
-	ctx.AddLogData(appcontext.Fields{"url": c.Value})
+	var (
+		target = c.Arguments[appcommand.MonitorParameters.Target]
+	)
+
+	ctx.AddLogData(appcontext.Fields{"url": target})
 
 	var result = &modelresponse.Check{}
 
 	// get url data
-	urlData, err := netinspect.ParseURL(ctx, c.Value)
+	urlData, err := netinspect.ParseURL(ctx, target)
 	if err != nil {
 		ctx.Logger.Error("error parsing url data", err, appcontext.Fields{})
 		return nil, err
@@ -138,17 +149,23 @@ func (c Check) tcp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	span := sentryio.NewSpan(ctx.Context, "[monitor][check] tcp")
 	defer span.Finish()
 
+	var (
+		target = c.Arguments[appcommand.MonitorParameters.Target]
+	)
+
+	ctx.AddLogData(appcontext.Fields{"tcp": target})
+
 	var result = &modelresponse.Check{}
 
 	// check
-	err := netinspect.CheckTCP(ctx, c.Value)
+	err := netinspect.CheckTCP(ctx, target)
 	if err != nil {
 		ctx.Logger.Error("error checking tcp data", err, appcontext.Fields{})
 		return nil, err
 	}
 
 	// measure
-	measure, err := netinspect.MeasureTCPResponseTime(ctx, c.Value)
+	measure, err := netinspect.MeasureTCPResponseTime(ctx, target)
 	if err != nil {
 		ctx.Logger.Error("error measuring tcp data", err, appcontext.Fields{})
 		return nil, err
@@ -158,7 +175,7 @@ func (c Check) tcp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	result.Template = content.MonitorTemplateTCP
 	result.ResponseTimeInMS = measure.ResponseTimeInMs
 	result.IsUp = measure.IsUp
-	result.Name = c.Value
+	result.Name = target
 
 	return result, nil
 }
@@ -167,15 +184,21 @@ func (c Check) icmp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	span := sentryio.NewSpan(ctx.Context, "[monitor][check] icmp")
 	defer span.Finish()
 
+	var (
+		target = c.Arguments[appcommand.MonitorParameters.Target]
+	)
+
+	ctx.AddLogData(appcontext.Fields{"tcp": target})
+
 	var result = &modelresponse.Check{}
 
 	// validate
-	if !netinspect.IsValidICMP(ctx, c.Value) {
-		return nil, fmt.Errorf("invalid icmp address %s", c.Value)
+	if !netinspect.IsValidICMP(ctx, target) {
+		return nil, fmt.Errorf("invalid icmp address %s", target)
 	}
 
 	// check
-	icmpData, err := netinspect.CheckICMP(ctx, c.Value)
+	icmpData, err := netinspect.CheckICMP(ctx, target)
 	if err != nil {
 		ctx.Logger.Error("error checking icmp data", err, appcontext.Fields{})
 		return nil, err
@@ -185,7 +208,7 @@ func (c Check) icmp(ctx *appcontext.AppContext) (*modelresponse.Check, error) {
 	result.Template = content.MonitorTemplateICMP
 	result.ResponseTimeInMS = icmpData.ResponseTimeInMs
 	result.IsUp = true
-	result.Name = c.Value
+	result.Name = target
 	result.IPResolves = []string{icmpData.IPAddress}
 	result.ICMP = modelresponse.CheckICMP{
 		PackageTransmitted: icmpData.PackageTransmitted,

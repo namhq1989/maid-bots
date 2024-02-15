@@ -5,18 +5,3 @@ type Command struct {
 	WithSlash   string
 	Description string
 }
-
-type ArgumentAction struct {
-	Name        string
-	Description string
-}
-
-type ArgumentTarget struct {
-	Name        string
-	Description string
-}
-
-type ArgumentType struct {
-	Name        string
-	Description string
-}

@@ -153,8 +153,10 @@ func (Monitor) process(ctx *appcontext.AppContext, intervalSeconds int) (total i
 					CreatedAt: time.Now(),
 				}
 				c = monitor.Check{
-					Target: string(record.Type),
-					Value:  record.Target,
+					Arguments: map[string]string{
+						"type":   string(record.Type),
+						"target": record.Target,
+					},
 				}
 			)
 

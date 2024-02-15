@@ -15,18 +15,16 @@ import (
 )
 
 type Register struct {
-	Target   string
-	Value    string
-	Platform string
-	ChatID   string
-	User     modelcommand.User
+	Arguments map[string]string
+	Platform  string
+	ChatID    string
+	User      modelcommand.User
 }
 
 func (c Register) Process(ctx *appcontext.AppContext) (string, error) {
 	// check first
 	check := Check{
-		Target: c.Target,
-		Value:  c.Value,
+		Arguments: c.Arguments,
 	}
 
 	result, err := check.Process(ctx)
@@ -34,18 +32,22 @@ func (c Register) Process(ctx *appcontext.AppContext) (string, error) {
 		return "", err
 	}
 
-	switch c.Target {
-	case appcommand.MonitorTargets.Domain.Name:
+	var (
+		t = c.Arguments[appcommand.MonitorParameters.Type]
+	)
+
+	switch t {
+	case appcommand.MonitorTypes.Domain:
 		return c.domain(ctx, result)
-	case appcommand.MonitorTargets.HTTP.Name:
+	case appcommand.MonitorTypes.HTTP:
 		return c.http(ctx, result)
-	case appcommand.MonitorTargets.TCP.Name:
+	case appcommand.MonitorTypes.TCP:
 		return c.tcp(ctx, result)
-	case appcommand.MonitorTargets.ICMP.Name:
+	case appcommand.MonitorTypes.ICMP:
 		return c.icmp(ctx, result)
 	}
 
-	return "", fmt.Errorf("target %s is not supported", c.Target)
+	return "", fmt.Errorf("type %s is not supported", t)
 }
 
 func (c Register) domain(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
