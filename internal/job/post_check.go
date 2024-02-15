@@ -13,8 +13,8 @@ import (
 const (
 	last15Minutes = time.Minute * 15
 
-	successMessage = "[resolved]  🔥🔥🔥  %s %s is UP  🔥🔥🔥  "
-	failedMessage  = "[incident]  🔥🔥🔥  %s %s is DOWN - %s  🔥🔥🔥  "
+	successMessage = "[resolved]  ✅✅✅  %s %s is UP  ✅✅✅  "
+	failedMessage  = "[incident]  🆘🆘🆘  %s %s is DOWN - %s  🆘🆘🆘  "
 )
 
 func sendMessage(ctx *appcontext.AppContext, doc mongodb.HealthCheckRecord) {
@@ -24,7 +24,7 @@ func sendMessage(ctx *appcontext.AppContext, doc mongodb.HealthCheckRecord) {
 	)
 
 	// get latest record
-	recentRecord, err := hcrSvc.GetRecentRecordOfTarget(ctx, doc.Code)
+	recentRecord, err := hcrSvc.GetRecentRecordOfMonitor(ctx, doc.Code)
 	if err != nil {
 		ctx.Logger.Error("error when get recent record", err, appcontext.Fields{"targetCode": doc.Code})
 		return

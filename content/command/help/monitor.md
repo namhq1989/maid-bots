@@ -28,7 +28,7 @@ The `/monitor` command allows you to manage and monitor various targets with dif
   `remove` \- remove a specific target by its id
     • `id` \- target id
 
-  `stats` \- obtain statistics of a specific target by its ID
+  `stats` \- obtain statistics of a specific target by its id
     • `id` \- target id
 
 *Examples:*
@@ -36,3 +36,4 @@ The `/monitor` command allows you to manage and monitor various targets with dif
 /monitor action\=check type\=domain target\=google\.com
 /monitor action\=register type\=domain target\=google\.com
 /monitor action\=list type\=domain
+/monitor action\=remove id\=1a2b
