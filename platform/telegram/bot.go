@@ -40,9 +40,6 @@ func Init(enabled bool, token string) {
 	// help
 	b.RegisterHandlerRegexp(bot.HandlerTypeMessageText, generateRegexp(appcommand.Root.Help.WithSlash), helpHandler)
 
-	// example
-	b.RegisterHandlerRegexp(bot.HandlerTypeMessageText, generateRegexp(appcommand.Root.Example.WithSlash), exampleHandler)
-
 	// monitor
 	b.RegisterHandlerRegexp(bot.HandlerTypeMessageText, generateRegexp(appcommand.Root.Monitor.WithSlash), monitorHandler)
 
@@ -72,9 +69,5 @@ var commands = []models.BotCommand{
 	{
 		Command:     appcommand.Root.Random.Name,
 		Description: appcommand.Root.Random.Description,
-	},
-	{
-		Command:     appcommand.Root.Example.Name,
-		Description: appcommand.Root.Example.Description,
 	},
 }

@@ -12,61 +12,60 @@ import (
 )
 
 type String struct {
-	Message string
-	Target  string
+	Arguments map[string]string
 }
 
 func (c String) Process(ctx *appcontext.AppContext) string {
 	var result = "invalid target"
 
-	switch c.Target {
-	case appcommand.RandomStringTargets.Person:
+	switch c.Arguments[appcommand.RandomStringParameters.Value] {
+	case appcommand.RandomStringValues.Person:
 		result = c.person(ctx)
-	case appcommand.RandomStringTargets.Email:
+	case appcommand.RandomStringValues.Email:
 		result = c.email(ctx)
-	case appcommand.RandomStringTargets.Phone:
+	case appcommand.RandomStringValues.Phone:
 		result = c.phone(ctx)
-	case appcommand.RandomStringTargets.Username:
+	case appcommand.RandomStringValues.Username:
 		result = c.username(ctx)
-	case appcommand.RandomStringTargets.Address:
+	case appcommand.RandomStringValues.Address:
 		result = c.address(ctx)
-	case appcommand.RandomStringTargets.LatLon:
+	case appcommand.RandomStringValues.LatLon:
 		result = c.latlon(ctx)
-	case appcommand.RandomStringTargets.Sentence:
+	case appcommand.RandomStringValues.Sentence:
 		result = c.sentence(ctx)
-	case appcommand.RandomStringTargets.Paragraph:
+	case appcommand.RandomStringValues.Paragraph:
 		result = c.paragraph(ctx)
-	case appcommand.RandomStringTargets.Quote:
+	case appcommand.RandomStringValues.Quote:
 		result = c.quote(ctx)
-	case appcommand.RandomStringTargets.UUID:
+	case appcommand.RandomStringValues.UUID:
 		result = c.uuid(ctx)
-	case appcommand.RandomStringTargets.HexColor:
+	case appcommand.RandomStringValues.HexColor:
 		result = c.hexColor(ctx)
-	case appcommand.RandomStringTargets.RGBColor:
+	case appcommand.RandomStringValues.RGBColor:
 		result = c.rgbColor(ctx)
-	case appcommand.RandomStringTargets.URL:
+	case appcommand.RandomStringValues.URL:
 		result = c.url(ctx)
-	case appcommand.RandomStringTargets.ImageURL:
+	case appcommand.RandomStringValues.ImageURL:
 		result = c.imageURL(ctx)
-	case appcommand.RandomStringTargets.Domain:
+	case appcommand.RandomStringValues.Domain:
 		result = c.domain(ctx)
-	case appcommand.RandomStringTargets.IPv4:
+	case appcommand.RandomStringValues.IPv4:
 		result = c.ipv4(ctx)
-	case appcommand.RandomStringTargets.IPv6:
+	case appcommand.RandomStringValues.IPv6:
 		result = c.ipv6(ctx)
-	case appcommand.RandomStringTargets.UserAgent:
+	case appcommand.RandomStringValues.UserAgent:
 		result = c.userAgent(ctx)
-	case appcommand.RandomStringTargets.Date:
+	case appcommand.RandomStringValues.Date:
 		result = c.date(ctx)
-	case appcommand.RandomStringTargets.Timezone:
+	case appcommand.RandomStringValues.Timezone:
 		result = c.timezone(ctx)
-	case appcommand.RandomStringTargets.CreditCard:
+	case appcommand.RandomStringValues.CreditCard:
 		result = c.creditCard(ctx)
-	case appcommand.RandomStringTargets.WalletAddress:
+	case appcommand.RandomStringValues.WalletAddress:
 		result = c.walletAddress(ctx)
-	case appcommand.RandomStringTargets.Pet:
+	case appcommand.RandomStringValues.Pet:
 		result = c.pet(ctx)
-	case appcommand.RandomStringTargets.Emoji:
+	case appcommand.RandomStringValues.Emoji:
 		result = c.emoji(ctx)
 	}
 

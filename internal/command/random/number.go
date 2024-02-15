@@ -15,12 +15,12 @@ import (
 )
 
 type Number struct {
-	Message    string
+	Arguments  map[string]string
 	Parameters *NumberParameters
 }
 
 type NumberParameters struct {
-	Kind   string
+	Format string
 	Min    int
 	Max    int
 	Count  int
@@ -28,23 +28,12 @@ type NumberParameters struct {
 }
 
 var (
-	kindInt    = "int"
-	kindDouble = "double"
-	validKinds = []string{kindInt, kindDouble}
+	formatInt    = "int"
+	formatDouble = "double"
+	validFormats = []string{formatInt, formatDouble}
 )
 
-func (c *Number) splitMessageAndCollectParameters(ctx *appcontext.AppContext) ([]string, error) {
-	span := sentryio.NewSpan(ctx.Context, "split message and collect parameters")
-	defer span.Finish()
-
-	parts := strings.Fields(c.Message)
-	if len(parts) < 2 {
-		return nil, errors.New("invalid command parameters")
-	}
-	return parts[2:], nil
-}
-
-func (c *Number) mapParametersToStruct(ctx *appcontext.AppContext, list []string) error {
+func (c *Number) mapParametersToStruct(ctx *appcontext.AppContext) error {
 	span := sentryio.NewSpan(ctx.Context, "map parameters to struct")
 	defer span.Finish()
 
@@ -53,24 +42,13 @@ func (c *Number) mapParametersToStruct(ctx *appcontext.AppContext, list []string
 		totalMatchedParams = 0
 	)
 
-	for _, opt := range list {
-		// split
-		parts := strings.Split(opt, "=")
-
-		// if the option doesn't have 2 parts, it's invalid and just skip
-		if len(parts) != 2 {
-			continue
-		}
-
-		key := parts[0]
-		value := parts[1]
-
+	for key, value := range c.Arguments {
 		switch key {
-		case appcommand.RandomNumberParameters.Type:
-			if !slices.Contains(validKinds, value) {
+		case appcommand.RandomNumberParameters.Format:
+			if !slices.Contains(validFormats, value) {
 				continue
 			}
-			parameters.Kind = value
+			parameters.Format = value
 			totalMatchedParams++
 		case appcommand.RandomNumberParameters.Min:
 			v, err := strconv.Atoi(value)
@@ -129,12 +107,12 @@ func (c *Number) random(ctx *appcontext.AppContext) (string, error) {
 		c.Parameters.Count = 1
 	}
 
-	if c.Parameters.Kind == "" {
-		c.Parameters.Kind = kindInt // Default to "int" if not specified
+	if c.Parameters.Format == "" {
+		c.Parameters.Format = formatInt // Default to "int" if not specified
 	}
 
 	// adjust count if unique is true and exceeds the possible unique values
-	if c.Parameters.Kind == kindInt && c.Parameters.Unique && c.Parameters.Count > (c.Parameters.Max-c.Parameters.Min+1) {
+	if c.Parameters.Format == formatInt && c.Parameters.Unique && c.Parameters.Count > (c.Parameters.Max-c.Parameters.Min+1) {
 		c.Parameters.Count = c.Parameters.Max - c.Parameters.Min + 1
 	}
 
@@ -145,7 +123,7 @@ func (c *Number) random(ctx *appcontext.AppContext) (string, error) {
 	var result strings.Builder
 	result.Grow(c.Parameters.Count*10 + len("Result: \n"))
 	result.WriteString("Result: \n")
-	if c.Parameters.Kind == kindInt {
+	if c.Parameters.Format == formatInt {
 		values := map[int]bool{}
 		for i := 0; i < c.Parameters.Count; i++ {
 			n := c.randomInt(&values)
@@ -195,14 +173,8 @@ func (c *Number) randomDouble(values *map[float64]bool) float64 {
 }
 
 func (c *Number) Process(ctx *appcontext.AppContext) string {
-	// collect parameters
-	parameterList, err := c.splitMessageAndCollectParameters(ctx)
-	if err != nil {
-		return err.Error()
-	}
-
 	// map to struct
-	if err = c.mapParametersToStruct(ctx, parameterList); err != nil {
+	if err := c.mapParametersToStruct(ctx); err != nil {
 		return err.Error()
 	}
 
