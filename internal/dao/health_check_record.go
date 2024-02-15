@@ -58,3 +58,19 @@ func (HealthCheckRecord) FindOneByCondition(ctx *appcontext.AppContext, conditio
 	}
 	return doc, nil
 }
+
+func (HealthCheckRecord) DeleteManyByCondition(ctx *appcontext.AppContext, condition interface{}) error {
+	span := sentryio.NewSpan(ctx.Context, "[dao][health check record] delete many by condition")
+	defer span.Finish()
+
+	var (
+		col = mongodb.HealthCheckRecordCol()
+	)
+
+	_, err := col.DeleteMany(ctx.Context, condition)
+	if err != nil {
+		ctx.Logger.Error("HealthCheckRecord delete many by condition", err, appcontext.Fields{"condition": condition})
+	}
+
+	return err
+}

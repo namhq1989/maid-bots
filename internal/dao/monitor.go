@@ -82,3 +82,20 @@ func (Monitor) UpdateOneByCondition(ctx *appcontext.AppContext, filter interface
 
 	return err
 }
+
+func (Monitor) DeleteOneByCondition(ctx *appcontext.AppContext, condition interface{}) (bool, error) {
+	span := sentryio.NewSpan(ctx.Context, "[dao][monitor] delete one by condition")
+	defer span.Finish()
+
+	var (
+		col = mongodb.MonitorCol()
+	)
+
+	result, err := col.DeleteOne(ctx.Context, condition)
+	if err != nil {
+		ctx.Logger.Error("Monitor delete one by condition", err, appcontext.Fields{"condition": condition})
+		return false, err
+	}
+
+	return result.DeletedCount > 0, nil
+}

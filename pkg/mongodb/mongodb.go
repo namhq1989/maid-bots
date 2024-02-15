@@ -36,9 +36,6 @@ func Connect(uri, dbName string) {
 
 	db = client.Database(dbName)
 
-	// time series
-	colTimeSeries()
-
 	// index
 	go colIndexes()
 }

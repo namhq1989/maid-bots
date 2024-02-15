@@ -1,8 +1,11 @@
 package service
 
 import (
+	"errors"
 	"strings"
 	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -28,8 +31,7 @@ func (s Monitor) randomCode(ctx *appcontext.AppContext, ownerID primitive.Object
 	span := sentryio.NewSpan(ctx.Context, "[service][monitor] random code")
 	defer span.Finish()
 
-	var code = ""
-
+	var code string
 	for {
 		code = random.StringWithLength(ctx, codeLength)
 		exists := s.isCodeExisted(ctx, code, ownerID)
@@ -38,7 +40,7 @@ func (s Monitor) randomCode(ctx *appcontext.AppContext, ownerID primitive.Object
 		}
 	}
 
-	return code
+	return strings.ToLower(code)
 }
 
 func (Monitor) isCodeExisted(ctx *appcontext.AppContext, code string, ownerID primitive.ObjectID) bool {
@@ -187,8 +189,8 @@ type MonitorFindByUserIDFilter struct {
 	Page    int64
 }
 
-func (Monitor) FindByUserID(ctx *appcontext.AppContext, userID primitive.ObjectID, filter MonitorFindByUserIDFilter) ([]mongodb.Monitor, error) {
-	span := sentryio.NewSpan(ctx.Context, "[service][monitor] get by user id")
+func (Monitor) FindByOwnerID(ctx *appcontext.AppContext, ownerID primitive.ObjectID, filter MonitorFindByUserIDFilter) ([]mongodb.Monitor, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][monitor] find by owner id")
 	defer span.Finish()
 
 	var (
@@ -196,7 +198,7 @@ func (Monitor) FindByUserID(ctx *appcontext.AppContext, userID primitive.ObjectI
 		limit     int64 = 10
 		skip            = limit * filter.Page
 		condition       = bson.D{
-			{Key: "owner", Value: userID},
+			{Key: "owner", Value: ownerID},
 		}
 	)
 
@@ -213,4 +215,52 @@ func (Monitor) FindByUserID(ctx *appcontext.AppContext, userID primitive.ObjectI
 	}
 
 	return d.FindByCondition(ctx, condition, opts)
+}
+
+func (Monitor) DeleteByID(ctx *appcontext.AppContext, monitorID string, ownerID primitive.ObjectID) error {
+	span := sentryio.NewSpan(ctx.Context, "[service][monitor] delete by id")
+	defer span.Finish()
+
+	if err := mongodb.RunTransaction(ctx, func(sessionCtx mongo.SessionContext) error {
+		// assign context
+		ctx.Context = sessionCtx
+
+		// remove target by code
+		{
+			var (
+				d         = dao.Monitor{}
+				condition = bson.D{
+					{Key: "owner", Value: ownerID},
+					{Key: "code", Value: strings.ToLower(monitorID)},
+				}
+			)
+
+			// delete
+			isDeleted, err := d.DeleteOneByCondition(ctx, condition)
+			if err != nil {
+				return err
+			}
+
+			if !isDeleted {
+				return errors.New("monitor not found")
+			}
+		}
+
+		// remove health check record by monitor code
+		{
+			var (
+				hcrSvc = HealthCheckRecord{}
+			)
+
+			if err := hcrSvc.DeleteByMonitorCode(ctx, monitorID, ownerID); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }

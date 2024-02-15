@@ -32,10 +32,12 @@ var MonitorParameters = struct {
 	Target  string
 	Keyword string
 	Page    string
+	ID      string
 }{
 	Action:  "action",
 	Type:    "type",
 	Target:  "target",
 	Keyword: "keyword",
 	Page:    "page",
+	ID:      "id",
 }

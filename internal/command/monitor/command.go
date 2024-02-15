@@ -152,8 +152,21 @@ func (c command) list(ctx *appcontext.AppContext) string {
 	return result
 }
 
-func (c command) remove(_ *appcontext.AppContext) string {
-	return bot.EscapeMarkdown(fmt.Sprintf("removing data with user %s ...", c.payload.User.ID))
+func (c command) remove(ctx *appcontext.AppContext) string {
+	h := Remove{
+		Arguments: c.arguments,
+		Platform:  c.payload.Platform,
+		ChatID:    c.payload.ChatID,
+		User:      c.payload.User,
+	}
+
+	// process
+	result, err := h.Process(ctx)
+	if err != nil {
+		return bot.EscapeMarkdown(err.Error())
+	}
+
+	return result
 }
 
 func (c command) stats(_ *appcontext.AppContext) string {

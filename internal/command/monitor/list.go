@@ -71,7 +71,7 @@ func (c *List) find(ctx *appcontext.AppContext) (string, error) {
 	}
 
 	// find
-	monitors, err := monitorSvc.FindByUserID(ctx, user.ID, service.MonitorFindByUserIDFilter{
+	monitors, err := monitorSvc.FindByOwnerID(ctx, user.ID, service.MonitorFindByUserIDFilter{
 		Type:    c.Parameters.Type,
 		Keyword: c.Parameters.Keyword,
 		Page:    c.Parameters.Page,
