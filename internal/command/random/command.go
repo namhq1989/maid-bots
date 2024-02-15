@@ -13,7 +13,7 @@ type command struct {
 
 func (c command) process(ctx *appcontext.AppContext) string {
 	var (
-		arguments = appcommand.ExtractParameters(c.payload.Message)
+		arguments = appcommand.ExtractArguments(c.payload.Message)
 	)
 
 	ctx.Logger.Info("receive: /random", appcontext.Fields{
@@ -28,37 +28,21 @@ func (c command) process(ctx *appcontext.AppContext) string {
 	)
 
 	if l == 0 {
-		// /random
-
 		// just skip it and respond the content of `/help random` command
 		return content.Command.Help.Random
-	} else if l == 1 {
-		// 	/monitor $arg1
-
-		if arguments[0] == appcommand.RandomTargets.Number.Name {
-			return content.Command.Help.RandomNumber
-		} else if arguments[0] == appcommand.RandomTargets.String.Name {
-			return content.Command.Help.RandomString
-		} else {
-			return content.Command.Help.Random
-		}
 	} else {
-		// 	/monitor $arg1 $arg2
-
-		switch arguments[0] {
-		case appcommand.RandomTargets.Number.Name:
+		if arguments[appcommand.RandomNumberParameters.Type] == appcommand.RandomTypes.Number.Name {
 			h := Number{
-				Message: c.payload.Message,
+				Arguments: arguments,
 			}
 			text = h.Process(ctx)
-		case appcommand.RandomTargets.String.Name:
+		} else if arguments[appcommand.RandomNumberParameters.Type] == appcommand.RandomTypes.String.Name {
 			h := String{
-				Message: c.payload.Message,
-				Target:  arguments[1],
+				Arguments: arguments,
 			}
 			text = h.Process(ctx)
 		}
-
-		return text
 	}
+
+	return text
 }

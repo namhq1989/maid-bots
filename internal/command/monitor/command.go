@@ -11,7 +11,6 @@ import (
 
 	"github.com/go-telegram/bot"
 
-	"github.com/namhq1989/maid-bots/content"
 	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
@@ -28,7 +27,7 @@ func (c command) process(ctx *appcontext.AppContext) string {
 	defer span.Finish()
 
 	var (
-		arguments = appcommand.ExtractParameters(c.payload.Message)
+		arguments = appcommand.ExtractArguments(c.payload.Message)
 	)
 
 	ctx.Logger.Info("receive: /monitor", appcontext.Fields{
@@ -37,54 +36,56 @@ func (c command) process(ctx *appcontext.AppContext) string {
 		"arguments": arguments,
 	})
 
-	var (
-		l    = len(arguments)
-		text = "invalid command"
-	)
+	return "invalid command"
 
-	if l == 0 || l == 1 {
-		// /monitor
-
-		// this command requires at least 2 arguments
-		// just skip it and respond the content of `/help monitor` command
-		return content.Command.Help.Monitor
-	} else if l == 2 {
-		// 	/monitor $arg1 $arg2
-
-		if arguments[0] == appcommand.MonitorActions.List.Name {
-			// if `$arg1` is equal to `list`
-			c.argAction = arguments[0]
-			c.argTarget = arguments[1]
-			return c.list(ctx)
-		} else {
-			// for other scenarios with insufficient arguments, respond the content of `/example monitor` command
-			return content.Command.Example.Monitor
-		}
-	} else {
-		// 	/monitor $arg1 $arg2 $arg3
-		c.argAction = arguments[0]
-		c.argTarget = arguments[1]
-		c.argValue = arguments[2]
-
-		if err := c.validateArguments(ctx); err != nil {
-			ctx.Logger.Error("validate arguments failed", err, appcontext.Fields{})
-			return err.Error()
-		}
-
-		switch c.argAction {
-		case appcommand.MonitorActions.Check.Name:
-			return c.check(ctx)
-		case appcommand.MonitorActions.Register.Name:
-			return c.register(ctx)
-		case appcommand.MonitorActions.List.Name:
-			return c.list(ctx)
-		case appcommand.MonitorActions.Remove.Name:
-			return c.remove(ctx)
-		case appcommand.MonitorActions.Stats.Name:
-			return c.stats(ctx)
-		}
-		return text
-	}
+	// var (
+	// 	l    = len(arguments)
+	// 	text = "invalid command"
+	// )
+	//
+	// if l == 0 || l == 1 {
+	// 	// /monitor
+	//
+	// 	// this command requires at least 2 arguments
+	// 	// just skip it and respond the content of `/help monitor` command
+	// 	return content.Command.Help.Monitor
+	// } else if l == 2 {
+	// 	// 	/monitor $arg1 $arg2
+	//
+	// 	if arguments[0] == appcommand.MonitorActions.List.Name {
+	// 		// if `$arg1` is equal to `list`
+	// 		c.argAction = arguments[0]
+	// 		c.argTarget = arguments[1]
+	// 		return c.list(ctx)
+	// 	} else {
+	// 		// for other scenarios with insufficient arguments, respond the content of `/example monitor` command
+	// 		return content.Command.Example.Monitor
+	// 	}
+	// } else {
+	// 	// 	/monitor $arg1 $arg2 $arg3
+	// 	c.argAction = arguments[0]
+	// 	c.argTarget = arguments[1]
+	// 	c.argValue = arguments[2]
+	//
+	// 	if err := c.validateArguments(ctx); err != nil {
+	// 		ctx.Logger.Error("validate arguments failed", err, appcontext.Fields{})
+	// 		return err.Error()
+	// 	}
+	//
+	// 	switch c.argAction {
+	// 	case appcommand.MonitorActions.Check.Name:
+	// 		return c.check(ctx)
+	// 	case appcommand.MonitorActions.Register.Name:
+	// 		return c.register(ctx)
+	// 	case appcommand.MonitorActions.List.Name:
+	// 		return c.list(ctx)
+	// 	case appcommand.MonitorActions.Remove.Name:
+	// 		return c.remove(ctx)
+	// 	case appcommand.MonitorActions.Stats.Name:
+	// 		return c.stats(ctx)
+	// 	}
+	// 	return text
+	// }
 }
 
 func (c command) validateArguments(ctx *appcontext.AppContext) error {

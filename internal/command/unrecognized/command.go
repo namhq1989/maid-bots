@@ -5,7 +5,6 @@ import (
 
 	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
 
-	"github.com/namhq1989/maid-bots/internal/command/example"
 	"github.com/namhq1989/maid-bots/internal/command/help"
 	"github.com/namhq1989/maid-bots/internal/command/monitor"
 	"github.com/namhq1989/maid-bots/internal/command/random"
@@ -20,12 +19,12 @@ type command struct {
 
 func (c command) process(ctx *appcontext.AppContext) string {
 	var (
-		arguments = appcommand.ExtractParameters(c.payload.Message)
+		arguments = appcommand.ExtractArguments(c.payload.Message)
 	)
 
 	// sometimes users click on the handler from "/help" content
 	// and for some reason this library can't process the handler
-	// so this function will re-check again to make sure the message is a handler
+	// so this function will re-check again to make sure the message can handle correctly
 	cmd := appcommand.ExtractCommand(c.payload.Message)
 	if !appcommand.IsRootCommandValid(cmd) {
 		ctx.Logger.Info("receive: unrecognized message", appcontext.Fields{
@@ -54,8 +53,6 @@ func (c command) process(ctx *appcontext.AppContext) string {
 	switch cmd {
 	case appcommand.Root.Help.WithSlash:
 		return help.ProcessMessage(ctx, c.payload)
-	case appcommand.Root.Example.WithSlash:
-		return example.ProcessMessage(ctx, c.payload)
 	case appcommand.Root.Monitor.WithSlash:
 		return monitor.ProcessMessage(ctx, c.payload)
 	case appcommand.Root.Random.WithSlash:

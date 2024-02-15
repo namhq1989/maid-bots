@@ -6,7 +6,6 @@ var Root = struct {
 	Help    Command
 	Monitor Command
 	Random  Command
-	Example Command
 }{
 	Help: Command{
 		Name:        "help",
@@ -23,18 +22,12 @@ var Root = struct {
 		WithSlash:   "/random",
 		Description: "Random things",
 	},
-	Example: Command{
-		Name:        "example",
-		WithSlash:   "/example",
-		Description: "Examples",
-	},
 }
 
 var RootCommandsArray = []string{
 	Root.Help.WithSlash,
 	Root.Monitor.WithSlash,
 	Root.Random.WithSlash,
-	Root.Example.WithSlash,
 }
 
 func IsRootCommandValid(v string) bool {

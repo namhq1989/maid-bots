@@ -1,14 +1,14 @@
 package appcommand
 
-var RandomTargets = struct {
-	Number ArgumentTarget
-	String ArgumentTarget
+var RandomTypes = struct {
+	Number ArgumentType
+	String ArgumentType
 }{
-	Number: ArgumentTarget{
+	Number: ArgumentType{
 		Name:        "number",
 		Description: "Random a number",
 	},
-	String: ArgumentTarget{
+	String: ArgumentType{
 		Name:        "string",
 		Description: "Random a string",
 	},
@@ -16,19 +16,29 @@ var RandomTargets = struct {
 
 var RandomNumberParameters = struct {
 	Type   string
+	Format string
 	Min    string
 	Max    string
 	Count  string
 	Unique string
 }{
 	Type:   "type",
+	Format: "format",
 	Min:    "min",
 	Max:    "max",
 	Count:  "count",
 	Unique: "unique",
 }
 
-var RandomStringTargets = struct {
+var RandomStringParameters = struct {
+	Type  string
+	Value string
+}{
+	Type:  "string",
+	Value: "value",
+}
+
+var RandomStringValues = struct {
 	Person        string
 	Email         string
 	Phone         string

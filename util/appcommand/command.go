@@ -15,3 +15,8 @@ type ArgumentTarget struct {
 	Name        string
 	Description string
 }
+
+type ArgumentType struct {
+	Name        string
+	Description string
+}
