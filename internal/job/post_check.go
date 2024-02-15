@@ -13,8 +13,8 @@ import (
 const (
 	last15Minutes = time.Minute * 15
 
-	successMessage = "[resolved]  🔥🔥🔥  %s %s is UP  🔥🔥🔥  "
-	failedMessage  = "[incident]  🔥🔥🔥  %s %s is DOWN - %s  🔥🔥🔥  "
+	successMessage = "[resolved]  ✅✅✅  %s %s is UP  ✅✅✅  "
+	failedMessage  = "[incident]  🆘🆘🆘  %s %s is DOWN - %s  🆘🆘🆘  "
 )
 
 func sendMessage(ctx *appcontext.AppContext, doc mongodb.HealthCheckRecord) {
