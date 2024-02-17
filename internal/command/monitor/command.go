@@ -2,7 +2,6 @@ package monitor
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
 
 	"github.com/namhq1989/maid-bots/content"
@@ -169,6 +168,19 @@ func (c command) remove(ctx *appcontext.AppContext) string {
 	return result
 }
 
-func (c command) stats(_ *appcontext.AppContext) string {
-	return bot.EscapeMarkdown(fmt.Sprintf("getting stats with user %s ...", c.payload.User.ID))
+func (c command) stats(ctx *appcontext.AppContext) string {
+	h := Stats{
+		Arguments: c.arguments,
+		Platform:  c.payload.Platform,
+		ChatID:    c.payload.ChatID,
+		User:      c.payload.User,
+	}
+
+	// process
+	result, err := h.Process(ctx)
+	if err != nil {
+		return bot.EscapeMarkdown(err.Error())
+	}
+
+	return bot.EscapeMarkdown(result.ToMarkdown(ctx))
 }
