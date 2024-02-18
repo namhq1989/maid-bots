@@ -81,3 +81,28 @@ func (HealthCheckRecord) GetResponseTimeMetricsInTimeRange(ctx *appcontext.AppCo
 		UptimePercentage: metrics.UptimePercentage,
 	}, nil
 }
+
+func (HealthCheckRecord) GetResponseTimeChartDataInTimeRange(ctx *appcontext.AppContext, ownerID primitive.ObjectID, code string, startTime, endTime time.Time) ([]modelresponse.HealthCheckRecordResponseTimeChartData, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][health check record] get response time chart data in time range")
+	defer span.Finish()
+
+	var (
+		d = dao.HealthCheckRecord{}
+	)
+
+	chart, err := d.GetResponseTimeChartDataInTimeRange(ctx, ownerID, code, startTime, endTime)
+	if err != nil {
+		return nil, err
+	}
+
+	var result = make([]modelresponse.HealthCheckRecordResponseTimeChartData, 0, len(chart))
+	for _, v := range chart {
+		result = append(result, modelresponse.HealthCheckRecordResponseTimeChartData{
+			Date: v.Date,
+			Hour: v.Hour,
+			Avg:  v.Avg,
+		})
+	}
+
+	return result, nil
+}

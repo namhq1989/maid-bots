@@ -166,3 +166,110 @@ func (HealthCheckRecord) GetMetricsInTimeRange(ctx *appcontext.AppContext, owner
 
 	return &result, nil
 }
+
+type ResponseTimeChartData struct {
+	Date string  `bson:"date"`
+	Hour int     `bson:"hour"`
+	Avg  float64 `bson:"avg"`
+}
+
+func (d HealthCheckRecord) GetResponseTimeChartDataInTimeRange(ctx *appcontext.AppContext, ownerID primitive.ObjectID, code string, startTime, endTime time.Time) ([]ResponseTimeChartData, error) {
+	span := sentryio.NewSpan(ctx.Context, "[dao][monitor] get response time chart data in time range")
+	defer span.Finish()
+
+	var (
+		col      = mongodb.HealthCheckRecordCol()
+		pipeline = bson.A{
+			bson.M{
+				"$match": bson.M{
+					"owner": ownerID,
+					"code":  code,
+					"createdAt": bson.M{
+						"$gte": startTime,
+						"$lte": endTime,
+					},
+				},
+			},
+			bson.M{
+				"$project": bson.M{
+					"hour":             bson.M{"$hour": "$createdAt"},
+					"date":             bson.M{"$dateToString": bson.M{"format": "%Y-%m-%d", "date": "$createdAt"}},
+					"responseTimeInMs": 1,
+				},
+			},
+			bson.M{
+				"$group": bson.M{
+					"_id":             bson.M{"hour": "$hour", "date": "$date"},
+					"avgResponseTime": bson.M{"$avg": "$responseTimeInMs"},
+				},
+			},
+			bson.M{
+				"$project": bson.M{
+					"_id":  0,
+					"date": "$_id.date",
+					"hour": "$_id.hour",
+					"avg":  "$avgResponseTime",
+				},
+			},
+			bson.M{
+				"$sort": bson.M{"date": 1, "hour": 1},
+			},
+		}
+	)
+
+	// execute aggregation query
+	cursor, err := col.Aggregate(ctx.Context, pipeline)
+	if err != nil {
+		ctx.Logger.Error("HealthCheckRecord get response time chart data in time range aggregation", err, appcontext.Fields{
+			"ownerID": ownerID.Hex(),
+			"code":    code,
+			"start":   startTime.String(),
+			"end":     endTime.String(),
+		})
+		return nil, err
+	}
+	defer func() { _ = cursor.Close(ctx.Context) }()
+
+	// Map the MongoDB result to ResponseData structs
+	var result []ResponseTimeChartData
+	for cursor.Next(ctx.Context) {
+		var record bson.M
+		if err = cursor.Decode(&record); err != nil {
+			return nil, err
+		}
+		mappedData := d.mapChartData(record)
+		if mappedData != nil {
+			result = append(result, *mappedData)
+		}
+	}
+	if err = cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (d HealthCheckRecord) mapChartData(result bson.M) *ResponseTimeChartData {
+	var data ResponseTimeChartData
+
+	// Extract date, hour, and avg from the result
+	date, ok := result["date"].(string)
+	if !ok {
+		return nil
+	}
+	hour, ok := result["hour"].(int32)
+	if !ok {
+		return nil
+	}
+	avg, ok := result["avg"].(float64)
+	if !ok {
+		return nil
+	}
+
+	// Assign values to ResponseData struct
+	data.Date = date
+	data.Hour = int(hour)
+	data.Avg = avg
+
+	return &data
+}

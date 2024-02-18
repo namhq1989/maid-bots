@@ -309,5 +309,11 @@ func (Monitor) StatsByCode(ctx *appcontext.AppContext, ownerID primitive.ObjectI
 		CreatedAt: modelresponse.NewTimeResponse(monitor.CreatedAt),
 	}
 
+	// chart data
+	go func() {
+		chart, _ := hrcSvc.GetResponseTimeChartDataInTimeRange(ctx, ownerID, code, oneDayAgo, now)
+		ctx.Logger.Print("response time chart data", chart)
+	}()
+
 	return result, nil
 }

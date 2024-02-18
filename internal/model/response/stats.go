@@ -15,6 +15,12 @@ type HealthCheckRecordResponseTimeMetrics struct {
 	UptimePercentage float64 `json:"uptimePercentage"`
 }
 
+type HealthCheckRecordResponseTimeChartData struct {
+	Date string  `json:"date"`
+	Hour int     `json:"hour"`
+	Avg  float64 `json:"avg"`
+}
+
 type Stats struct {
 	Template     string
 	Monitor      Monitor                               `json:"monitor"`
