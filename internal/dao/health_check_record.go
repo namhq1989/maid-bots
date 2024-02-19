@@ -249,7 +249,7 @@ func (d HealthCheckRecord) GetResponseTimeChartDataInTimeRange(ctx *appcontext.A
 	return result, nil
 }
 
-func (d HealthCheckRecord) mapChartData(result bson.M) *ResponseTimeChartData {
+func (HealthCheckRecord) mapChartData(result bson.M) *ResponseTimeChartData {
 	var data ResponseTimeChartData
 
 	// Extract date, hour, and avg from the result
