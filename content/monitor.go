@@ -14,14 +14,7 @@ type MonitorCheckResult struct {
 	ICMP   string
 }
 
-type MonitorStatsResult struct {
-	Domain string
-	HTTP   string
-	TCP    string
-	ICMP   string
-}
-
 type MonitorResult struct {
 	Check MonitorCheckResult
-	Stats MonitorStatsResult
+	Stats string
 }

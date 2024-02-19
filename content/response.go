@@ -13,8 +13,5 @@ func response() {
 	Response.Monitor.Check.TCP = readFile("content/response/monitor/check/tcp.md")
 	Response.Monitor.Check.ICMP = readFile("content/response/monitor/check/icmp.md")
 
-	Response.Monitor.Stats.Domain = readFile("content/response/monitor/stats/domain.md")
-	Response.Monitor.Stats.HTTP = readFile("content/response/monitor/stats/http.md")
-	Response.Monitor.Stats.TCP = readFile("content/response/monitor/stats/tcp.md")
-	Response.Monitor.Stats.ICMP = readFile("content/response/monitor/stats/icmp.md")
+	Response.Monitor.Stats = readFile("content/response/monitor/stats/result.md")
 }

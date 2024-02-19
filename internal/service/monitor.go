@@ -292,9 +292,7 @@ func (Monitor) StatsByCode(ctx *appcontext.AppContext, ownerID primitive.ObjectI
 		hrcSvc    = HealthCheckRecord{}
 		now       = time.Now()
 		oneDayAgo = now.Add(-24 * time.Hour)
-		result    = &modelresponse.Stats{
-			Template: string(monitor.Type),
-		}
+		result    = &modelresponse.Stats{}
 	)
 
 	// response time
