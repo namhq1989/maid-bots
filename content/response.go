@@ -12,4 +12,6 @@ func response() {
 	Response.Monitor.Check.HTTP = readFile("content/response/monitor/check/http.md")
 	Response.Monitor.Check.TCP = readFile("content/response/monitor/check/tcp.md")
 	Response.Monitor.Check.ICMP = readFile("content/response/monitor/check/icmp.md")
+
+	Response.Monitor.Stats = readFile("content/response/monitor/stats/result.md")
 }

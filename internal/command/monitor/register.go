@@ -2,14 +2,11 @@ package monitor
 
 import (
 	"fmt"
-	"strings"
 
 	modelcommand "github.com/namhq1989/maid-bots/internal/model/command"
-
-	"github.com/namhq1989/maid-bots/pkg/mongodb"
-
 	modelresponse "github.com/namhq1989/maid-bots/internal/model/response"
 	"github.com/namhq1989/maid-bots/internal/service"
+	"github.com/namhq1989/maid-bots/pkg/mongodb"
 	"github.com/namhq1989/maid-bots/util/appcommand"
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
@@ -73,7 +70,7 @@ func (c Register) domain(ctx *appcontext.AppContext, checkData *modelresponse.Ch
 		return "", err
 	}
 
-	return fmt.Sprintf("target `%s` has been successfully registered with id `%s`", checkData.Name, strings.ToUpper(doc.Code)), nil
+	return fmt.Sprintf("target `%s` has been successfully registered with id `%s`", checkData.Name, doc.Code), nil
 }
 
 func (c Register) http(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
@@ -99,7 +96,7 @@ func (c Register) http(ctx *appcontext.AppContext, checkData *modelresponse.Chec
 		return "", err
 	}
 
-	return fmt.Sprintf("target `%s` has been successfully registered with id `%s`", checkData.Name, strings.ToUpper(doc.Code)), nil
+	return fmt.Sprintf("target `%s` has been successfully registered with id `%s`", checkData.Name, doc.Code), nil
 }
 
 func (c Register) tcp(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
@@ -125,7 +122,7 @@ func (c Register) tcp(ctx *appcontext.AppContext, checkData *modelresponse.Check
 		return "", err
 	}
 
-	return fmt.Sprintf("target `%s` has been successfully registered with id `%s`", checkData.Name, strings.ToUpper(doc.Code)), nil
+	return fmt.Sprintf("target `%s` has been successfully registered with id `%s`", checkData.Name, doc.Code), nil
 }
 
 func (c Register) icmp(ctx *appcontext.AppContext, checkData *modelresponse.Check) (string, error) {
@@ -151,5 +148,5 @@ func (c Register) icmp(ctx *appcontext.AppContext, checkData *modelresponse.Chec
 		return "", err
 	}
 
-	return fmt.Sprintf("target `%s` has been successfully registered with id `%s`", checkData.Name, strings.ToUpper(doc.Code)), nil
+	return fmt.Sprintf("target `%s` has been successfully registered with id `%s`", checkData.Name, doc.Code), nil
 }

@@ -36,7 +36,7 @@ func (t *TimeResponse) FormatYYYYMMDD() string {
 	if t == nil || t.Time.IsZero() {
 		return ""
 	}
-	return t.Time.Format("2006-01-02")
+	return t.Time.Format("2006/01/02")
 }
 
 func NewTimeResponse(t time.Time) *TimeResponse {

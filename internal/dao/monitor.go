@@ -1,9 +1,12 @@
 package dao
 
 import (
+	"errors"
+
 	"github.com/namhq1989/maid-bots/pkg/mongodb"
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcontext"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -22,6 +25,22 @@ func (Monitor) InsertOne(ctx *appcontext.AppContext, doc mongodb.Monitor) error 
 		ctx.Logger.Error("Monitor insert one", err, appcontext.Fields{"doc": doc})
 	}
 	return err
+}
+
+func (Monitor) FindOneByCondition(ctx *appcontext.AppContext, condition interface{}, opts ...*options.FindOneOptions) (doc *mongodb.Monitor, err error) {
+	span := sentryio.NewSpan(ctx.Context, "[dao][monitor] find one by condition")
+	defer span.Finish()
+
+	var (
+		col = mongodb.MonitorCol()
+	)
+
+	err = col.FindOne(ctx.Context, condition, opts...).Decode(&doc)
+	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+		ctx.Logger.Error("Monitor find one by condition", err, appcontext.Fields{"condition": condition})
+		return nil, err
+	}
+	return doc, nil
 }
 
 func (Monitor) FindByCondition(ctx *appcontext.AppContext, condition interface{}, opts ...*options.FindOptions) ([]mongodb.Monitor, error) {

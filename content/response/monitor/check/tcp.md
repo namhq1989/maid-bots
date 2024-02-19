@@ -1,4 +1,4 @@
 Result:
 - Name: $name
 - Status: $status
-- Response time: $response_timems
+- Response time: $response_time ms

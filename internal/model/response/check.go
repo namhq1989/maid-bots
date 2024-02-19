@@ -1,7 +1,6 @@
 package modelresponse
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
@@ -54,7 +53,7 @@ func (m Check) ToMarkdown(ctx *appcontext.AppContext) string {
 		result = content.Response.Monitor.Check.Domain
 		result = strings.ReplaceAll(result, "$name", m.Name)
 		result = strings.ReplaceAll(result, "$status", status)
-		result = strings.ReplaceAll(result, "$response_time", fmt.Sprintf("%d", m.ResponseTimeInMS))
+		result = strings.ReplaceAll(result, "$response_time", formatReadableInt(m.ResponseTimeInMS))
 		result = strings.ReplaceAll(result, "$scheme", https)
 		result = strings.ReplaceAll(result, "$ip_resolves", strings.Join(m.IPResolves, ", "))
 		if isHttps {
@@ -66,24 +65,24 @@ func (m Check) ToMarkdown(ctx *appcontext.AppContext) string {
 		result = content.Response.Monitor.Check.HTTP
 		result = strings.ReplaceAll(result, "$name", m.Name)
 		result = strings.ReplaceAll(result, "$status", status)
-		result = strings.ReplaceAll(result, "$response_time", fmt.Sprintf("%d", m.ResponseTimeInMS))
+		result = strings.ReplaceAll(result, "$response_time", formatReadableInt(m.ResponseTimeInMS))
 		result = strings.ReplaceAll(result, "$scheme", https)
 		return result
 	case content.MonitorTemplateTCP:
 		result = content.Response.Monitor.Check.TCP
 		result = strings.ReplaceAll(result, "$name", m.Name)
 		result = strings.ReplaceAll(result, "$status", status)
-		result = strings.ReplaceAll(result, "$response_time", fmt.Sprintf("%d", m.ResponseTimeInMS))
+		result = strings.ReplaceAll(result, "$response_time", formatReadableInt(m.ResponseTimeInMS))
 		return result
 	case content.MonitorTemplateICMP:
 		result = content.Response.Monitor.Check.ICMP
 		result = strings.ReplaceAll(result, "$name", m.Name)
 		result = strings.ReplaceAll(result, "$status", status)
 		result = strings.ReplaceAll(result, "$ip_resolves", strings.Join(m.IPResolves, ", "))
-		result = strings.ReplaceAll(result, "$response_time", fmt.Sprintf("%d", m.ResponseTimeInMS))
-		result = strings.ReplaceAll(result, "$pk_transmitted", fmt.Sprintf("%d", m.ICMP.PackageTransmitted))
-		result = strings.ReplaceAll(result, "$pk_received", fmt.Sprintf("%d", m.ICMP.PackageReceived))
-		result = strings.ReplaceAll(result, "$pk_loss", fmt.Sprintf("%.0f", m.ICMP.PackageLoss))
+		result = strings.ReplaceAll(result, "$response_time", formatReadableInt(m.ResponseTimeInMS))
+		result = strings.ReplaceAll(result, "$pk_transmitted", formatReadableInt(int64(m.ICMP.PackageTransmitted)))
+		result = strings.ReplaceAll(result, "$pk_received", formatReadableInt(int64(m.ICMP.PackageReceived)))
+		result = strings.ReplaceAll(result, "$pk_loss", formatReadableInt(int64(m.ICMP.PackageLoss)))
 		return result
 	}
 

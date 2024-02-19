@@ -25,5 +25,5 @@ func randomHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 	result := random.ProcessMessage(ctx, getPayload(update))
 
 	// respond
-	respond(ctx, b, update, appcommand.Root.Random.Name, result)
+	respond(ctx, b, update, appcommand.Root.Random.Name, result.Text)
 }
