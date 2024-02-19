@@ -11,7 +11,7 @@ type command struct {
 	payload modelcommand.Payload
 }
 
-func (c command) process(ctx *appcontext.AppContext) string {
+func (c command) process(ctx *appcontext.AppContext) modelcommand.Result {
 	var (
 		arguments = appcommand.ExtractArguments(c.payload.Message)
 	)
@@ -28,7 +28,9 @@ func (c command) process(ctx *appcontext.AppContext) string {
 	)
 
 	if l == 0 {
-		return content.Command.Help.Random
+		return modelcommand.Result{
+			Text: content.Command.Help.Random,
+		}
 	}
 
 	if arguments[appcommand.RandomNumberParameters.Type] == appcommand.RandomTypes.Number {
@@ -43,5 +45,7 @@ func (c command) process(ctx *appcontext.AppContext) string {
 		text = h.Process(ctx)
 	}
 
-	return text
+	return modelcommand.Result{
+		Text: text,
+	}
 }

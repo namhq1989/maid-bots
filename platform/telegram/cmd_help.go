@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"context"
+
 	"github.com/namhq1989/maid-bots/internal/command/help"
 	"github.com/namhq1989/maid-bots/pkg/sentryio"
 	"github.com/namhq1989/maid-bots/util/appcommand"
@@ -25,5 +26,5 @@ func helpHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 	result := help.ProcessMessage(ctx, getPayload(update))
 
 	// respond
-	respond(ctx, b, update, appcommand.Root.Help.Name, result)
+	respond(ctx, b, update, appcommand.Root.Help.Name, result.Text)
 }

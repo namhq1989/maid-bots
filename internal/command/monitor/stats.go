@@ -2,7 +2,8 @@ package monitor
 
 import (
 	"errors"
-	"fmt"
+
+	modelresponse "github.com/namhq1989/maid-bots/internal/model/response"
 
 	"github.com/namhq1989/maid-bots/internal/service"
 
@@ -11,17 +12,17 @@ import (
 	"github.com/namhq1989/maid-bots/util/appcontext"
 )
 
-type Remove struct {
+type Stats struct {
 	Arguments map[string]string
 	Platform  string
 	ChatID    string
 	User      modelcommand.User
 }
 
-func (c Remove) Process(ctx *appcontext.AppContext) (string, error) {
+func (c Stats) Process(ctx *appcontext.AppContext) (*modelresponse.Stats, error) {
 	id := c.Arguments[appcommand.MonitorParameters.ID]
 	if id == "" {
-		return "", errors.New("id is required")
+		return nil, errors.New("id is required")
 	}
 
 	var (
@@ -32,13 +33,14 @@ func (c Remove) Process(ctx *appcontext.AppContext) (string, error) {
 	// find user first
 	user, err := userSvc.FindOrCreateWithPlatformID(ctx, c.Platform, c.ChatID, c.User)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	// remove
-	if err = monitorSvc.DeleteByID(ctx, id, user.ID); err != nil {
-		return "", err
+	// find
+	stats, err := monitorSvc.StatsByCode(ctx, user.ID, id)
+	if err != nil {
+		return nil, err
 	}
 
-	return fmt.Sprintf("target `%s` has been successfully removed", id), nil
+	return stats, nil
 }

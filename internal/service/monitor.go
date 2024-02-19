@@ -5,6 +5,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/namhq1989/maid-bots/pkg/chart"
+
+	modelresponse "github.com/namhq1989/maid-bots/internal/model/response"
+
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -263,4 +267,53 @@ func (Monitor) DeleteByID(ctx *appcontext.AppContext, monitorID string, ownerID 
 	}
 
 	return nil
+}
+
+func (Monitor) StatsByCode(ctx *appcontext.AppContext, ownerID primitive.ObjectID, code string) (*modelresponse.Stats, error) {
+	span := sentryio.NewSpan(ctx.Context, "[service][monitor] stats")
+	defer span.Finish()
+
+	var (
+		d         = dao.Monitor{}
+		condition = bson.D{
+			{Key: "owner", Value: ownerID},
+			{Key: "code", Value: strings.ToLower(code)},
+		}
+	)
+
+	// find monitor first
+	monitor, err := d.FindOneByCondition(ctx, condition)
+	if err != nil {
+		return nil, err
+	}
+
+	// statistics
+	var (
+		hrcSvc    = HealthCheckRecord{}
+		now       = time.Now()
+		oneDayAgo = now.Add(-24 * time.Hour)
+		result    = &modelresponse.Stats{}
+	)
+
+	// response time
+	if result.ResponseTime, err = hrcSvc.GetResponseTimeMetricsInTimeRange(ctx, ownerID, code, oneDayAgo, now); err != nil {
+		return nil, err
+	}
+
+	// assign data
+	result.Monitor = modelresponse.Monitor{
+		Code:      monitor.Code,
+		Type:      string(monitor.Type),
+		Target:    monitor.Target,
+		Interval:  monitor.Interval,
+		CreatedAt: modelresponse.NewTimeResponse(monitor.CreatedAt),
+	}
+
+	// chart
+	chartData, _ := hrcSvc.GetResponseTimeChartDataInTimeRange(ctx, ownerID, code, oneDayAgo, now)
+
+	c := chart.MonitorResponseTimeLine{Data: chartData}
+	result.ChartImageName, _ = c.ToImage(ctx)
+
+	return result, nil
 }

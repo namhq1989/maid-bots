@@ -17,5 +17,5 @@ func unrecognizedHandler(bgCtx context.Context, b *bot.Bot, update *models.Updat
 	result := unrecognized.ProcessMessage(ctx, getPayload(update))
 
 	// respond
-	respond(ctx, b, update, "unrecognized", result)
+	respond(ctx, b, update, "unrecognized", result.Text)
 }

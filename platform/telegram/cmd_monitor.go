@@ -26,6 +26,9 @@ func monitorHandler(bgCtx context.Context, b *bot.Bot, update *models.Update) {
 	// process
 	result := monitor.ProcessMessage(ctx, getPayload(update))
 
-	// respond
-	respond(ctx, b, update, appcommand.Root.Monitor.Name, result)
+	if result.Photo == "" {
+		respond(ctx, b, update, appcommand.Root.Monitor.Name, result.Text)
+	} else {
+		respondWithPhoto(ctx, b, update, appcommand.Root.Monitor.Name, result.Text, result.Photo)
+	}
 }

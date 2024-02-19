@@ -27,7 +27,7 @@ type Monitor struct {
 	Type      MonitorType        `bson:"type"`
 	Target    string             `bson:"target"`
 	Data      MonitorMetadata    `bson:"data"`
-	Interval  int                `json:"interval"`
+	Interval  int                `bson:"interval"`
 	CreatedAt time.Time          `bson:"createdAt"`
 }
 

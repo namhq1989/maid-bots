@@ -24,7 +24,3 @@ type HealthCheckRecord struct {
 	ResponseTimeInMs int64                   `bson:"responseTimeInMs"`
 	CreatedAt        time.Time               `bson:"createdAt"`
 }
-
-type HealthCheckRecordMetadata struct {
-	Value string `bson:"value"`
-}

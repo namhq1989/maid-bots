@@ -16,4 +16,5 @@ type MonitorCheckResult struct {
 
 type MonitorResult struct {
 	Check MonitorCheckResult
+	Stats string
 }
