@@ -17,7 +17,7 @@ type command struct {
 	payload modelcommand.Payload
 }
 
-func (c command) process(ctx *appcontext.AppContext) string {
+func (c command) process(ctx *appcontext.AppContext) modelcommand.Result {
 	var (
 		arguments = appcommand.ExtractArguments(c.payload.Message)
 	)
@@ -33,7 +33,7 @@ func (c command) process(ctx *appcontext.AppContext) string {
 			"arguments": arguments,
 		})
 
-		return "invalid command"
+		return modelcommand.Result{Text: "invalid command"}
 	}
 
 	// apm transaction
@@ -65,5 +65,7 @@ func (c command) process(ctx *appcontext.AppContext) string {
 		"arguments": arguments,
 	})
 
-	return "invalid command"
+	return modelcommand.Result{
+		Text: "invalid command",
+	}
 }

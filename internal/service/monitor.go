@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/namhq1989/maid-bots/pkg/chart"
+
 	modelresponse "github.com/namhq1989/maid-bots/internal/model/response"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -309,11 +311,11 @@ func (Monitor) StatsByCode(ctx *appcontext.AppContext, ownerID primitive.ObjectI
 		CreatedAt: modelresponse.NewTimeResponse(monitor.CreatedAt),
 	}
 
-	// chart data
-	go func() {
-		chart, _ := hrcSvc.GetResponseTimeChartDataInTimeRange(ctx, ownerID, code, oneDayAgo, now)
-		ctx.Logger.Print("response time chart data", chart)
-	}()
+	// chart
+	chartData, _ := hrcSvc.GetResponseTimeChartDataInTimeRange(ctx, ownerID, code, oneDayAgo, now)
+
+	c := chart.MonitorResponseTimeLine{Data: chartData}
+	result.ChartImageName, _ = c.ToImage(ctx)
 
 	return result, nil
 }

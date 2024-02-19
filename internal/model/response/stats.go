@@ -22,9 +22,10 @@ type HealthCheckRecordResponseTimeChartData struct {
 }
 
 type Stats struct {
-	Template     string
-	Monitor      Monitor                               `json:"monitor"`
-	ResponseTime *HealthCheckRecordResponseTimeMetrics `json:"responseTime"`
+	Template       string
+	Monitor        Monitor                               `json:"monitor"`
+	ResponseTime   *HealthCheckRecordResponseTimeMetrics `json:"responseTime"`
+	ChartImageName string
 }
 
 func (m Stats) ToMarkdown(ctx *appcontext.AppContext) string {

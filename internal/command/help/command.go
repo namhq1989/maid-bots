@@ -11,7 +11,7 @@ type command struct {
 	payload modelcommand.Payload
 }
 
-func (c command) process(ctx *appcontext.AppContext) string {
+func (c command) process(ctx *appcontext.AppContext) modelcommand.Result {
 	var (
 		arguments = appcommand.ExtractArguments(c.payload.Message)
 	)
@@ -22,5 +22,7 @@ func (c command) process(ctx *appcontext.AppContext) string {
 		"arguments": arguments,
 	})
 
-	return content.Command.Help.Base
+	return modelcommand.Result{
+		Text: content.Command.Help.Base,
+	}
 }

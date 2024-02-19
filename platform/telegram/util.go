@@ -1,7 +1,9 @@
 package telegram
 
 import (
+	"bytes"
 	"fmt"
+	"os"
 	"regexp"
 	"strconv"
 
@@ -16,7 +18,7 @@ import (
 	"github.com/namhq1989/maid-bots/config"
 )
 
-func respond(ctx *appcontext.AppContext, b *bot.Bot, update *models.Update, command, result string) {
+func respond(ctx *appcontext.AppContext, b *bot.Bot, update *models.Update, command, text string) {
 	span := sentryio.NewSpan(ctx.Context, "[platform][telegram] respond")
 	defer span.Finish()
 
@@ -27,9 +29,33 @@ func respond(ctx *appcontext.AppContext, b *bot.Bot, update *models.Update, comm
 		LinkPreviewOptions: &models.LinkPreviewOptions{
 			IsDisabled: &isLinkPreviewDisable,
 		},
-		Text: result,
+		Text: text,
 	}); err != nil {
 		ctx.Logger.Error(fmt.Sprintf("send /%s response", command), err, appcontext.Fields{})
+	}
+}
+
+func respondWithPhoto(ctx *appcontext.AppContext, b *bot.Bot, update *models.Update, command, text, photo string) {
+	span := sentryio.NewSpan(ctx.Context, "[platform][telegram] respond with photo")
+	defer span.Finish()
+
+	// read file content
+	fileContent, _ := os.ReadFile(photo)
+
+	// remove file
+	defer func() { _ = os.Remove(photo) }()
+
+	// respond
+	if _, err := b.SendPhoto(ctx.Context, &bot.SendPhotoParams{
+		ChatID:    update.Message.Chat.ID,
+		ParseMode: models.ParseModeMarkdown,
+		Photo: &models.InputFileUpload{
+			Filename: photo,
+			Data:     bytes.NewReader(fileContent),
+		},
+		Caption: text,
+	}); err != nil {
+		ctx.Logger.Error(fmt.Sprintf("send /%s response with photo", command), err, appcontext.Fields{})
 	}
 }
 

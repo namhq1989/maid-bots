@@ -193,7 +193,7 @@ func (d HealthCheckRecord) GetResponseTimeChartDataInTimeRange(ctx *appcontext.A
 			bson.M{
 				"$project": bson.M{
 					"hour":             bson.M{"$hour": "$createdAt"},
-					"date":             bson.M{"$dateToString": bson.M{"format": "%Y-%m-%d", "date": "$createdAt"}},
+					"date":             bson.M{"$dateToString": bson.M{"format": "%m/%d, %H:00", "date": "$createdAt"}},
 					"responseTimeInMs": 1,
 				},
 			},

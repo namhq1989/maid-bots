@@ -21,7 +21,7 @@ type command struct {
 	arguments map[string]string
 }
 
-func (c command) process(ctx *appcontext.AppContext) string {
+func (c command) process(ctx *appcontext.AppContext) modelcommand.Result {
 	c.arguments = appcommand.ExtractArguments(c.payload.Message)
 
 	ctx.Logger.Info("receive: /monitor", appcontext.Fields{
@@ -36,12 +36,16 @@ func (c command) process(ctx *appcontext.AppContext) string {
 	)
 
 	if l == 0 {
-		return content.Command.Help.Monitor
+		return modelcommand.Result{
+			Text: content.Command.Help.Monitor,
+		}
 	}
 
 	// validate data
 	if err := c.validateData(ctx); err != nil {
-		return bot.EscapeMarkdown(err.Error())
+		return modelcommand.Result{
+			Text: bot.EscapeMarkdown(err.Error()),
+		}
 	}
 
 	switch c.arguments[appcommand.MonitorParameters.Action] {
@@ -57,7 +61,9 @@ func (c command) process(ctx *appcontext.AppContext) string {
 		return c.stats(ctx)
 	}
 
-	return text
+	return modelcommand.Result{
+		Text: text,
+	}
 }
 
 func (c command) validateData(ctx *appcontext.AppContext) error {
@@ -103,7 +109,7 @@ func (c command) validateData(ctx *appcontext.AppContext) error {
 	return nil
 }
 
-func (c command) check(ctx *appcontext.AppContext) string {
+func (c command) check(ctx *appcontext.AppContext) modelcommand.Result {
 	h := Check{
 		Arguments: c.arguments,
 	}
@@ -111,13 +117,17 @@ func (c command) check(ctx *appcontext.AppContext) string {
 	// process
 	result, err := h.Process(ctx)
 	if err != nil {
-		return bot.EscapeMarkdown(err.Error())
+		return modelcommand.Result{
+			Text: bot.EscapeMarkdown(err.Error()),
+		}
 	}
 
-	return bot.EscapeMarkdown(result.ToMarkdown(ctx))
+	return modelcommand.Result{
+		Text: bot.EscapeMarkdown(result.ToMarkdown(ctx)),
+	}
 }
 
-func (c command) register(ctx *appcontext.AppContext) string {
+func (c command) register(ctx *appcontext.AppContext) modelcommand.Result {
 	h := Register{
 		Arguments: c.arguments,
 		Platform:  c.payload.Platform,
@@ -128,13 +138,17 @@ func (c command) register(ctx *appcontext.AppContext) string {
 	// process
 	result, err := h.Process(ctx)
 	if err != nil {
-		return bot.EscapeMarkdown(err.Error())
+		return modelcommand.Result{
+			Text: bot.EscapeMarkdown(err.Error()),
+		}
 	}
 
-	return result
+	return modelcommand.Result{
+		Text: result,
+	}
 }
 
-func (c command) list(ctx *appcontext.AppContext) string {
+func (c command) list(ctx *appcontext.AppContext) modelcommand.Result {
 	h := List{
 		Arguments: c.arguments,
 		Platform:  c.payload.Platform,
@@ -145,13 +159,17 @@ func (c command) list(ctx *appcontext.AppContext) string {
 	// process
 	result, err := h.Process(ctx)
 	if err != nil {
-		return bot.EscapeMarkdown(err.Error())
+		return modelcommand.Result{
+			Text: bot.EscapeMarkdown(err.Error()),
+		}
 	}
 
-	return result
+	return modelcommand.Result{
+		Text: result,
+	}
 }
 
-func (c command) remove(ctx *appcontext.AppContext) string {
+func (c command) remove(ctx *appcontext.AppContext) modelcommand.Result {
 	h := Remove{
 		Arguments: c.arguments,
 		Platform:  c.payload.Platform,
@@ -162,13 +180,17 @@ func (c command) remove(ctx *appcontext.AppContext) string {
 	// process
 	result, err := h.Process(ctx)
 	if err != nil {
-		return bot.EscapeMarkdown(err.Error())
+		return modelcommand.Result{
+			Text: bot.EscapeMarkdown(err.Error()),
+		}
 	}
 
-	return result
+	return modelcommand.Result{
+		Text: result,
+	}
 }
 
-func (c command) stats(ctx *appcontext.AppContext) string {
+func (c command) stats(ctx *appcontext.AppContext) modelcommand.Result {
 	h := Stats{
 		Arguments: c.arguments,
 		Platform:  c.payload.Platform,
@@ -179,8 +201,13 @@ func (c command) stats(ctx *appcontext.AppContext) string {
 	// process
 	result, err := h.Process(ctx)
 	if err != nil {
-		return bot.EscapeMarkdown(err.Error())
+		return modelcommand.Result{
+			Text: bot.EscapeMarkdown(err.Error()),
+		}
 	}
 
-	return bot.EscapeMarkdown(result.ToMarkdown(ctx))
+	return modelcommand.Result{
+		Text:  bot.EscapeMarkdown(result.ToMarkdown(ctx)),
+		Photo: result.ChartImageName,
+	}
 }
