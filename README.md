@@ -11,12 +11,12 @@
 
 ---
 
-- [ ] Monitor: Domain, HTTP, TCP, ICMP
-  - [x] Check `domain`, `http`, `tcp`, `icmp`
-  - [x] Watch `domain`, `http`, `tcp`, `icmp`
-  - [ ] List // doing
-  - [ ] Remove
-  - [ ] Stats
+- [ ] Monitor: domain, http, tcp, icmp
+  - [x] Check
+  - [x] Watch
+  - [x] List
+  - [x] Remove
+  - [x] Stats
   - [ ] Alert
 - [ ] Random
   - [x] Number

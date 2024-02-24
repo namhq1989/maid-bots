@@ -106,3 +106,23 @@ func (HealthCheckRecord) GetResponseTimeChartDataInTimeRange(ctx *appcontext.App
 
 	return result, nil
 }
+
+func (HealthCheckRecord) IsTargetCheckedToday(ctx *appcontext.AppContext, code string) bool {
+	span := sentryio.NewSpan(ctx.Context, "[service][health check record] is target checked today")
+	defer span.Finish()
+
+	var (
+		d          = dao.HealthCheckRecord{}
+		now        = time.Now()
+		startOfDay = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+		condition  = bson.M{
+			"code": code,
+			"createdAt": bson.M{
+				"$gte": startOfDay,
+			},
+		}
+	)
+
+	total, _ := d.CountByCondition(ctx, condition)
+	return total > 0
+}
