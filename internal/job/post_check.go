@@ -2,6 +2,7 @@ package job
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/namhq1989/maid-bots/internal/service"
@@ -62,6 +63,55 @@ func sendMessage(ctx *appcontext.AppContext, doc mongodb.HealthCheckRecord) {
 		ctx.Logger.Error("user not found", nil, appcontext.Fields{"ownerID": doc.Owner.Hex()})
 		return
 	}
+
+	// Telegram
+	if user.Telegram != nil {
+		telegram.SendMessage(ctx, user.Telegram.RoomID, message)
+	}
+
+	// Discord
+
+	// Slack
+}
+
+const (
+	sslExpiryRemainingDaysCheck = 70
+	sslExpirationMessage        = "[attention]  🆘🆘🆘  the SSL certificate for %s will expire in the next %d days, please take necessary actions to renew it  🆘🆘🆘  "
+)
+
+func checkAndSendSSLExpirationMessage(ctx *appcontext.AppContext, doc mongodb.HealthCheckRecord, expireAt time.Time) {
+	var (
+		now                = time.Now()
+		daysUntilSSLExpiry = expireAt.Sub(now).Hours() / 24
+	)
+
+	if daysUntilSSLExpiry > sslExpiryRemainingDaysCheck {
+		return
+	}
+
+	// count if there is already a heath check record for today, return
+	var (
+		hcrSvc = service.HealthCheckRecord{}
+	)
+
+	if isChecked := hcrSvc.IsTargetCheckedToday(ctx, doc.Code); isChecked {
+		return
+	}
+
+	// send message
+	var (
+		userSvc = service.User{}
+	)
+
+	// find user with owner id
+	user, _ := userSvc.FindByID(ctx, doc.Owner)
+	if user == nil {
+		// return if not found
+		ctx.Logger.Error("user not found", nil, appcontext.Fields{"ownerID": doc.Owner.Hex()})
+		return
+	}
+
+	message := fmt.Sprintf(sslExpirationMessage, doc.Target, int(math.Round(daysUntilSSLExpiry)))
 
 	// Telegram
 	if user.Telegram != nil {

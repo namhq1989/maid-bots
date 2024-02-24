@@ -178,6 +178,11 @@ func (Monitor) process(ctx *appcontext.AppContext, intervalSeconds int) (total i
 			// send message
 			sendMessage(ctx, doc)
 
+			// ssl expiration
+			if result.SSL.ExpireAt != nil {
+				checkAndSendSSLExpirationMessage(ctx, doc, result.SSL.ExpireAt.Time)
+			}
+
 			// save history
 			_ = hcrService.NewRecord(ctx, doc)
 		}
