@@ -75,7 +75,7 @@ func sendMessage(ctx *appcontext.AppContext, doc mongodb.HealthCheckRecord) {
 }
 
 const (
-	sslExpiryRemainingDaysCheck = 70
+	sslExpiryRemainingDaysCheck = 30
 	sslExpirationMessage        = "[attention]  🆘🆘🆘  the SSL certificate for %s will expire in the next %d days, please take necessary actions to renew it  🆘🆘🆘  "
 )
 
