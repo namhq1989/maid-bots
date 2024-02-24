@@ -94,7 +94,7 @@ func checkAndSendSSLExpirationMessage(ctx *appcontext.AppContext, doc mongodb.He
 		hcrSvc = service.HealthCheckRecord{}
 	)
 
-	if isChecked := hcrSvc.IsTargetCheckedToday(ctx, doc.Code); isChecked {
+	if hcrSvc.IsTargetCheckedToday(ctx, doc.Code) {
 		return
 	}
 
