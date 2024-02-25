@@ -53,3 +53,7 @@ func HealthCheckRecordCol() *mongo.Collection {
 func NewObjectID() primitive.ObjectID {
 	return primitive.NewObjectID()
 }
+
+func ObjectIDFromString(id string) (primitive.ObjectID, error) {
+	return primitive.ObjectIDFromHex(id)
+}

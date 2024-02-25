@@ -4,10 +4,10 @@ import (
 	"github.com/labstack/echo/v4"
 	modelresponse "github.com/namhq1989/maid-bots/internal/model/response"
 	"github.com/namhq1989/maid-bots/internal/service"
+	"github.com/namhq1989/maid-bots/pkg/mongodb"
 	routepayload "github.com/namhq1989/maid-bots/platform/web/route/payload"
 	"github.com/namhq1989/maid-bots/util/echocontext"
 	"github.com/namhq1989/maid-bots/util/response"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Monitor struct{}
@@ -21,11 +21,17 @@ type Monitor struct{}
 // @router /monitors/list [get]
 func (Monitor) List(c echo.Context) error {
 	var (
-		ctx        = echocontext.GetContext(c)
-		ownerID, _ = primitive.ObjectIDFromHex("65c4c6f7c4c0c54bb33eedf0")
-		query      = echocontext.GetQuery(c).(routepayload.MonitorList)
-		s          = service.Monitor{}
+		ctx    = echocontext.GetContext(c)
+		userID = echocontext.GetUserID(c)
+		query  = echocontext.GetQuery(c).(routepayload.MonitorList)
+		s      = service.Monitor{}
 	)
+
+	// convert owner id
+	ownerID, err := mongodb.ObjectIDFromString(userID)
+	if err != nil {
+		return response.R400(c, err.Error(), echo.Map{})
+	}
 
 	docs, err := s.FindByOwnerID(ctx, ownerID, service.MonitorFindByUserIDFilter{
 		Page: query.Page,

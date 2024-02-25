@@ -19,7 +19,7 @@ func sendResponse(c echo.Context, httpCode int, message string, data map[string]
 // R200 response success
 func R200(c echo.Context, message string, data map[string]interface{}) error {
 	if message == "" {
-		message = "Successfully"
+		message = "successfully"
 	}
 	return sendResponse(c, http.StatusOK, message, data)
 }
@@ -27,7 +27,7 @@ func R200(c echo.Context, message string, data map[string]interface{}) error {
 // R400 bad request
 func R400(c echo.Context, message string, data map[string]interface{}) error {
 	if message == "" {
-		message = "Bad request"
+		message = "bad request"
 	}
 	return sendResponse(c, http.StatusBadRequest, message, data)
 }
@@ -35,7 +35,7 @@ func R400(c echo.Context, message string, data map[string]interface{}) error {
 // R401 unauthorized
 func R401(c echo.Context, message string, data map[string]interface{}) error {
 	if message == "" {
-		message = "Unauthorized"
+		message = "unauthorized"
 	}
 	return sendResponse(c, http.StatusUnauthorized, message, data)
 }
@@ -43,7 +43,7 @@ func R401(c echo.Context, message string, data map[string]interface{}) error {
 // R403 forbidden
 func R403(c echo.Context, message string, data map[string]interface{}) error {
 	if message == "" {
-		message = "Forbidden"
+		message = "forbidden"
 	}
 	return sendResponse(c, http.StatusUnauthorized, message, data)
 }
@@ -51,7 +51,7 @@ func R403(c echo.Context, message string, data map[string]interface{}) error {
 // R404 not found
 func R404(c echo.Context, message string, data map[string]interface{}) error {
 	if message == "" {
-		message = "Not found"
+		message = "not found"
 	}
 	return sendResponse(c, http.StatusNotFound, message, data)
 }
