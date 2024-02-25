@@ -7,10 +7,12 @@ const (
 	envDevelopment = "development"
 )
 
+var actualEnvironment = os.Getenv("ENVIRONMENT")
+
 func IsRelease() bool {
-	return os.Getenv("ENVIRONMENT") == envRelease
+	return actualEnvironment == envRelease
 }
 
 func IsDevelopment() bool {
-	return os.Getenv("ENVIRONMENT") == envDevelopment
+	return actualEnvironment == envDevelopment
 }
