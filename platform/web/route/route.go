@@ -15,6 +15,6 @@ func Init(e *echo.Echo) {
 
 	// components
 	common(e)
-	public(e)
 	sso(e)
+	monitor(e)
 }

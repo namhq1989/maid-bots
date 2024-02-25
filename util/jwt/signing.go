@@ -11,7 +11,7 @@ import (
 func Signing(ctx *appcontext.AppContext, payload User) (string, error) {
 	token := j.NewWithClaims(j.SigningMethodHS256, j.MapClaims{
 		"id":  payload.ID,
-		"exp": time.Now().Add(time.Second * time.Duration(expireTimeInSeconds)),
+		"exp": time.Now().Add(time.Second * time.Duration(expireTimeInSeconds)).Unix(),
 	})
 
 	// sign and get the complete encoded token as a string

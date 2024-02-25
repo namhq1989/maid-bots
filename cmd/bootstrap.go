@@ -49,7 +49,7 @@ func bootstrap(e *echo.Echo) {
 	// queue
 	queue.Init(cfg.RedisURL, cfg.QueueConcurrency)
 	e.Any("/q/*", echo.WrapHandler(queue.Dashboard(cfg.RedisURL)), middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
-		if cfg.Environment != "release" {
+		if !config.IsRelease() {
 			return true, nil
 		}
 
