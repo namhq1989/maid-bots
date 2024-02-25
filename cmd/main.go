@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"github.com/namhq1989/maid-bots/config"
 	"net/http"
 	"os"
 	"os/signal"
@@ -28,7 +29,7 @@ func main() {
 	// bootstrap
 	bootstrap(e)
 
-	if os.Getenv("ENVIRONMENT") == "release" {
+	if config.IsRelease() {
 		e.Use(middleware.Recover())
 	}
 

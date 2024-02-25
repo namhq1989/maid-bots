@@ -21,7 +21,7 @@ func common(e *echo.Echo) {
 
 	g.GET("/token/:id", func(c echo.Context) error {
 		// disable if env is "release"
-		if config.GetENV().Environment == "release" {
+		if config.IsRelease() {
 			return response.R404(c, "", echo.Map{})
 		}
 
