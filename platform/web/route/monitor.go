@@ -6,14 +6,13 @@ import (
 	routevalidation "github.com/namhq1989/maid-bots/platform/web/route/validation"
 )
 
-// public ...
-func public(e *echo.Echo) {
+func monitor(e *echo.Echo) {
 	var (
-		g = e.Group("/p")
-		h = handler.Public{}
-		v = routevalidation.Public{}
+		g = e.Group("/monitors")
+		h = handler.Monitor{}
+		v = routevalidation.Monitor{}
 	)
 
-	// Check domain
-	g.GET("/check/domain", h.CheckDomain, v.CheckDomain)
+	// List
+	g.GET("/list", h.List, v.List)
 }
