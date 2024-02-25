@@ -286,6 +286,9 @@ func (Monitor) StatsByCode(ctx *appcontext.AppContext, ownerID primitive.ObjectI
 	if err != nil {
 		return nil, err
 	}
+	if monitor == nil {
+		return nil, errors.New("monitor not found")
+	}
 
 	// statistics
 	var (
@@ -310,9 +313,9 @@ func (Monitor) StatsByCode(ctx *appcontext.AppContext, ownerID primitive.ObjectI
 	}
 
 	// chart
-	chartData, _ := hrcSvc.GetResponseTimeChartDataInTimeRange(ctx, ownerID, code, oneDayAgo, now)
+	result.Chart, _ = hrcSvc.GetResponseTimeChartDataInTimeRange(ctx, ownerID, code, oneDayAgo, now)
 
-	c := chart.MonitorResponseTimeLine{Data: chartData}
+	c := chart.MonitorResponseTimeLine{Data: result.Chart}
 	result.ChartImageName, _ = c.ToImage(ctx)
 
 	return result, nil

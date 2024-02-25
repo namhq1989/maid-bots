@@ -16,4 +16,7 @@ func monitor(e *echo.Echo) {
 
 	// List
 	g.GET("/list", h.List, v.List, routemiddleware.LoginRequired)
+
+	// Stats
+	g.GET("/stats/:code", h.Stats, routemiddleware.LoginRequired)
 }
